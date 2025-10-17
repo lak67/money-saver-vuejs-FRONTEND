@@ -1,17 +1,76 @@
-import { computed, ref } from 'vue'
+import { API_ENDPOINTS, apiRequest } from '@/lib/api'
+import { computed, onMounted, ref } from 'vue'
 import type { BudgetType } from '../../useRegisterModal'
 
 export function useBudgetTypesView() {
   // Local state for search and filtering
   const searchTerm = ref('')
   const showRecommended = ref(true)
+  const budgetTypes = ref<BudgetType[]>([])
+  const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
   // Recommended budget types for first-time users
   const recommendedBudgetIds = ref(['rent', 'utilities', 'groceries', 'savings', 'transportation'])
 
+  // API Functions
+  const fetchBudgetTypes = async (): Promise<BudgetType[]> => {
+    try {
+      isLoading.value = true
+      error.value = null
+      
+      const response = await apiRequest(API_ENDPOINTS.BUDGET_TYPES, {
+        method: 'POST'
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      console.log(data)
+      
+      // Assuming your API returns an array of budget types
+      // Adjust the data structure mapping as needed based on your API response
+      budgetTypes.value = data.map((item: any) => ({
+        id: item.id || item.ID,
+        name: item.name || item.Name,
+        description: item.description || item.Description,
+        icon: item.icon || item.Icon || '💰'
+      }))
+
+      console.log('Fetched budget types:', budgetTypes.value)
+
+      return budgetTypes.value
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch budget types'
+      error.value = errorMessage
+      console.error('Error fetching budget types:', err)
+      
+      // Return fallback budget types if API fails
+      const fallbackTypes: BudgetType[] = [
+        { id: 'rent', name: 'Rent', description: 'Monthly housing rent', icon: '🏠' },
+        { id: 'utilities', name: 'Utilities', description: 'Electric, water, gas, internet', icon: '⚡' },
+        { id: 'groceries', name: 'Groceries', description: 'Food and household items', icon: '🛒' },
+        { id: 'savings', name: 'Savings', description: 'Emergency fund and investments', icon: '💰' },
+        { id: 'transportation', name: 'Transportation', description: 'Car payments, gas, public transit', icon: '🚗' }
+      ]
+      budgetTypes.value = fallbackTypes
+      return fallbackTypes
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // Initialize budget types on mount
+  onMounted(() => {
+    fetchBudgetTypes()
+  })
+
   // Computed properties
-  const filteredBudgetTypes = computed(() => (availableTypes: BudgetType[]) => {
-    let filtered = availableTypes
+  const filteredBudgetTypes = computed(() => {
+    let filtered = budgetTypes.value
 
     if (searchTerm.value) {
       const search = searchTerm.value.toLowerCase()
@@ -24,20 +83,20 @@ export function useBudgetTypesView() {
     return filtered
   })
 
-  const getRecommendedTypes = computed(() => (availableTypes: BudgetType[]) => {
-    return availableTypes.filter(type => 
+  const getRecommendedTypes = computed(() => {
+    return budgetTypes.value.filter(type => 
       recommendedBudgetIds.value.includes(type.id)
     )
   })
 
-  const getOtherTypes = computed(() => (availableTypes: BudgetType[]) => {
-    return availableTypes.filter(type => 
+  const getOtherTypes = computed(() => {
+    return budgetTypes.value.filter(type => 
       !recommendedBudgetIds.value.includes(type.id)
     )
   })
 
-  const getSelectionSummary = computed(() => (selectedIds: string[], availableTypes: BudgetType[]) => {
-    const selectedTypes = availableTypes.filter(type => 
+  const getSelectionSummary = computed(() => (selectedIds: string[]) => {
+    const selectedTypes = budgetTypes.value.filter(type => 
       selectedIds.includes(type.id)
     )
     
@@ -52,15 +111,23 @@ export function useBudgetTypesView() {
     return `${selectedTypes.length} categories selected`
   })
 
+  // Get budget types with selection status
+  const getBudgetTypesWithSelection = computed(() => (selectedIds: string[]) => {
+    return budgetTypes.value.map(type => ({
+      ...type,
+      isSelected: selectedIds.includes(type.id)
+    }))
+  })
+
   // Methods
   const clearSearch = () => {
     searchTerm.value = ''
   }
 
-  const selectRecommended = (availableTypes: BudgetType[], onToggle: (id: string) => void, selectedIds: string[]) => {
-    const recommendedTypes = getRecommendedTypes.value(availableTypes)
+  const selectRecommended = (onToggle: (id: string) => void, selectedIds: string[]) => {
+    const recommendedTypes = getRecommendedTypes.value
     
-    recommendedTypes.forEach(type => {
+    recommendedTypes.forEach((type: BudgetType) => {
       if (!selectedIds.includes(type.id)) {
         onToggle(type.id)
       }
@@ -77,22 +144,32 @@ export function useBudgetTypesView() {
     return selectedIds.length > 0
   }
 
+  const refreshBudgetTypes = () => {
+    return fetchBudgetTypes()
+  }
+
   return {
     // State
     searchTerm,
     showRecommended,
     recommendedBudgetIds,
+    budgetTypes,
+    isLoading,
+    error,
 
     // Computed
     filteredBudgetTypes,
     getRecommendedTypes,
     getOtherTypes,
     getSelectionSummary,
+    getBudgetTypesWithSelection,
 
     // Methods
     clearSearch,
     selectRecommended,
     clearAll,
-    validateSelection
+    validateSelection,
+    fetchBudgetTypes,
+    refreshBudgetTypes
   }
 }

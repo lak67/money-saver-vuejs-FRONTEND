@@ -47,7 +47,7 @@ const {
                 Money Saver
             </Button>
         </DialogTrigger>
-        <DialogContent class="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent class="sm:max-w-[500px] max-h-[75vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>{{ currentStepTitle }}</DialogTitle>
             </DialogHeader>

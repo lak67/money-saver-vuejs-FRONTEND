@@ -10,7 +10,7 @@
         <div class="space-y-4">
             <div class="space-y-2">
                 <Label for="email">Email Address</Label>
-                <Input id="email" :model-value="email" @update:model-value="handleEmailUpdate" class="w-full"
+                <Input id="email" :model-value="props.email" @update:model-value="handleEmailUpdate" class="w-full"
                     placeholder="Enter your email" type="email" required />
             </div>
 
@@ -18,7 +18,7 @@
                 <div class="flex items-center gap-2">
                     <Label for="password">Password</Label>
                     <div class="group relative">
-                        <Button variant="ghost" size="sm" class="h-5 w-5 p-0 rounded-full" type="button">
+                        <Button variant="default" size="sm" class="h-5 w-5 p-0 rounded-full" type="button">
                             <span class="text-xs">?</span>
                         </Button>
                         <div
@@ -28,17 +28,17 @@
                                 <ul class="space-y-1">
                                     <li class="flex items-center gap-1">
                                         <span
-                                            :class="passwordValidation.hasMinLength ? 'text-green-500' : 'text-muted-foreground'">✓</span>
+                                            :class="props.passwordValidation.hasMinLength ? 'text-green-500' : 'text-muted-foreground'">✓</span>
                                         At least 8 characters
                                     </li>
                                     <li class="flex items-center gap-1">
                                         <span
-                                            :class="passwordValidation.hasUpperCase ? 'text-green-500' : 'text-muted-foreground'">✓</span>
+                                            :class="props.passwordValidation.hasUpperCase ? 'text-green-500' : 'text-muted-foreground'">✓</span>
                                         One uppercase letter
                                     </li>
                                     <li class="flex items-center gap-1">
                                         <span
-                                            :class="passwordValidation.hasNumber ? 'text-green-500' : 'text-muted-foreground'">✓</span>
+                                            :class="props.passwordValidation.hasNumber ? 'text-green-500' : 'text-muted-foreground'">✓</span>
                                         One number
                                     </li>
                                 </ul>
@@ -46,8 +46,8 @@
                         </div>
                     </div>
                 </div>
-                <Input id="password" :model-value="password" @update:model-value="handlePasswordUpdate" type="password"
-                    class="w-full" placeholder="Enter your password" required />
+                <Input id="password" :model-value="props.password" @update:model-value="handlePasswordUpdate"
+                    type="password" class="w-full" placeholder="Enter your password" required />
             </div>
         </div>
     </div>
@@ -76,7 +76,10 @@ interface Emits {
     'update:password': [value: string]
 }
 
-defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+    email: 'l@g.com',
+    password: 'Password123'
+})
 const emit = defineEmits<Emits>()
 
 // Event handlers

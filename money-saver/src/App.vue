@@ -1,9 +1,21 @@
 <script setup lang="ts">
-import RegisterModal from './components/ui/register-modal/RegisterModal.vue';
+import Navigation from '@/components/layout/Navigation.vue';
+import { useTheme } from '@/composables/useTheme';
+
+// Initialize theme system
+const { } = useTheme()
 </script>
 
 <template>
-  <RegisterModal />
+  <div class="min-h-screen bg-background text-foreground">
+    <!-- Global Navigation -->
+    <Navigation />
+
+    <!-- Main Content Area -->
+    <main class="flex-1">
+      <router-view />
+    </main>
+  </div>
 </template>
 
 <style scoped></style>
