@@ -17,7 +17,6 @@ const {
     password,
     yearlyIncome,
     selectedBudgetTypes,
-    budgetAmounts,
     isLoading,
     currentStep,
     currentStepTitle,
@@ -63,16 +62,16 @@ const {
 
             <!-- Budget Types Step -->
             <BudgetTypesView v-if="currentStep === 'budget-types'" :available-budget-types="availableBudgetTypes"
-                :selected-budget-types="selectedBudgetTypes" @toggle="toggleBudgetType" />
+                :selected-budget-types="selectedBudgetTypes.map(b => b.id)" @toggle="toggleBudgetType" />
 
             <!-- Budget Amounts Step -->
             <BudgetAmountsView v-if="currentStep === 'budget-amounts'" :available-budget-types="availableBudgetTypes"
-                :budget-amounts="budgetAmounts" :selected-budget-types="selectedBudgetTypes"
+                :selected-budget-types="selectedBudgetTypes"
                 @update-amount="updateBudgetAmount" />
 
             <!-- Confirmation Step -->
             <BudgetConfirmationView v-if="currentStep === 'confirmation'" :email="email" :yearly-income="yearlyIncome"
-                :available-budget-types="availableBudgetTypes" :budget-amounts="budgetAmounts"
+                :available-budget-types="availableBudgetTypes"
                 :selected-budget-types="selectedBudgetTypes" />
 
             <!-- Success Step -->

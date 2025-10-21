@@ -8,19 +8,19 @@
         </div>
 
         <div class="space-y-3">
-            <div v-for="budgetTypeId in selectedBudgetTypes" :key="budgetTypeId" class="space-y-2">
+            <div v-for="budgetType in selectedBudgetTypes" :key="budgetType.id" class="space-y-2">
                 <div class="flex items-center gap-2">
-                    <span>{{ getBudgetType(budgetTypeId)?.icon }}</span>
-                    <Label :for="budgetTypeId">{{ getBudgetType(budgetTypeId)?.name }}</Label>
+                    <span>{{ getBudgetType(budgetType.id)?.icon }}</span>
+                    <Label :for="budgetType.id">{{ getBudgetType(budgetType.id)?.name }}</Label>
                 </div>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                    <Input :id="budgetTypeId" type="number" :value="getBudgetAmount(budgetTypeId)"
-                        @input="handleAmountUpdate(budgetTypeId, $event)" placeholder="0" class="pl-6" min="0"
+                    <Input :id="budgetType.id" type="number" :value="budgetType.amount"
+                        @input="handleAmountUpdate(budgetType.id, $event)" placeholder="0" class="pl-6" min="0"
                         step="10" />
                 </div>
                 <p class="text-xs text-muted-foreground">
-                    {{ getBudgetType(budgetTypeId)?.description }}
+                    {{ getBudgetType(budgetType.id)?.description }}
                 </p>
             </div>
         </div>
@@ -38,12 +38,11 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { computed } from "vue"
-import type { BudgetAmount, BudgetType } from "../../useRegisterModal"
+import type { SelectedBudgetType, BudgetType } from "../../useRegisterModal"
 
 interface Props {
     availableBudgetTypes: BudgetType[]
-    budgetAmounts: BudgetAmount[]
-    selectedBudgetTypes: string[]
+    selectedBudgetTypes: SelectedBudgetType[]
 }
 
 interface Emits {
@@ -57,11 +56,6 @@ const getBudgetType = (budgetTypeId: string) => {
     return props.availableBudgetTypes.find(bt => bt.id === budgetTypeId)
 }
 
-const getBudgetAmount = (budgetTypeId: string) => {
-    const budget = props.budgetAmounts.find(ba => ba.budgetTypeId === budgetTypeId)
-    return budget?.amount || 0
-}
-
 const handleAmountUpdate = (budgetTypeId: string, event: Event) => {
     const target = event.target as HTMLInputElement
     const value = target.value === '' ? 0 : parseFloat(target.value)
@@ -69,6 +63,6 @@ const handleAmountUpdate = (budgetTypeId: string, event: Event) => {
 }
 
 const totalAmount = computed(() => {
-    return props.budgetAmounts.reduce((total, budget) => total + budget.amount, 0)
+    return props.selectedBudgetTypes.reduce((total, budget) => total + budget.amount, 0)
 })
 </script>

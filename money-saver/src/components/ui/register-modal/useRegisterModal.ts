@@ -1,6 +1,13 @@
+import { API_ENDPOINTS, apiRequest } from "@/lib/api";
 import { computed, ref } from "vue";
 
-export type ModalStep = 'register' | 'income' | 'budget-types' | 'budget-amounts' | 'confirmation' | 'success';
+export type ModalStep =
+  | "register"
+  | "income"
+  | "budget-types"
+  | "budget-amounts"
+  | "confirmation"
+  | "success";
 
 export interface BudgetType {
   id: string;
@@ -9,8 +16,8 @@ export interface BudgetType {
   description: string;
 }
 
-export interface BudgetAmount {
-  budgetTypeId: string;
+export interface SelectedBudgetType {
+  id: string;
   amount: number;
 }
 
@@ -19,27 +26,33 @@ export function useRegisterModal() {
   const email = ref("");
   const password = ref("");
   const yearlyIncome = ref<number | null>(null);
-  const selectedBudgetTypes = ref<string[]>([]);
-  const budgetAmounts = ref<BudgetAmount[]>([]);
+  const selectedBudgetTypes = ref<SelectedBudgetType[]>([]);
   const isOpen = ref(false);
   const isLoading = ref(false);
-  const currentStep = ref<ModalStep>('register');
+  const currentStep = ref<ModalStep>("register");
 
   // Password validation helper
   const validatePassword = (password: string) => {
     const hasMinLength = password.length >= 8;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
-    return { hasMinLength, hasUpperCase, hasNumber, isValid: hasMinLength && hasUpperCase && hasNumber };
+    return {
+      hasMinLength,
+      hasUpperCase,
+      hasNumber,
+      isValid: hasMinLength && hasUpperCase && hasNumber,
+    };
   };
 
   // Computed properties
   const passwordValidation = computed(() => validatePassword(password.value));
 
   const isRegisterFormValid = computed(() => {
-    return email.value.trim().length > 0 && 
-           email.value.includes('@') && 
-           passwordValidation.value.isValid;
+    return (
+      email.value.trim().length > 0 &&
+      email.value.includes("@") &&
+      passwordValidation.value.isValid
+    );
   });
 
   const isIncomeFormValid = computed(() => {
@@ -51,103 +64,97 @@ export function useRegisterModal() {
   });
 
   const isBudgetAmountsFormValid = computed(() => {
-    return budgetAmounts.value.every(budget => 
-      budget.amount >= 0
-    );
+    return selectedBudgetTypes.value.every((budget) => budget.amount >= 0);
   });
 
   const currentStepTitle = computed(() => {
     switch (currentStep.value) {
-      case 'register':
-        return 'Create Your Account';
-      case 'income':
-        return 'Enter Your Yearly Income';
-      case 'budget-types':
-        return 'Select Your Budget Categories';
-      case 'budget-amounts':
-        return 'Set Monthly Budget Amounts';
-      case 'confirmation':
-        return 'Confirm Your Information';
-      case 'success':
-        return 'Welcome to Money Saver!';
+      case "register":
+        return "Create Your Account";
+      case "income":
+        return "Enter Your Yearly Income";
+      case "budget-types":
+        return "Select Your Budget Categories";
+      case "budget-amounts":
+        return "Set Monthly Budget Amounts";
+      case "confirmation":
+        return "Confirm Your Information";
+      case "success":
+        return "Welcome to Money Saver!";
       default:
-        return 'Register';
+        return "Register";
     }
   });
 
   // Available budget types
   const availableBudgetTypes = computed((): BudgetType[] => [
     {
-      id: 'rent',
-      name: 'Rent',
-      icon: '🏠',
-      description: 'Monthly rent or mortgage payment'
+      id: "rent",
+      name: "Rent",
+      icon: "🏠",
+      description: "Monthly rent or mortgage payment",
     },
     {
-      id: 'food',
-      name: 'Food',
-      icon: '🍽️',
-      description: 'Groceries and dining expenses'
+      id: "food",
+      name: "Food",
+      icon: "🍽️",
+      description: "Groceries and dining expenses",
     },
     {
-      id: 'utilities',
-      name: 'Utilities',
-      icon: '⚡',
-      description: 'Electric, water, gas, internet'
+      id: "utilities",
+      name: "Utilities",
+      icon: "⚡",
+      description: "Electric, water, gas, internet",
     },
     {
-      id: 'car-payment',
-      name: 'Car Payment',
-      icon: '🚗',
-      description: 'Monthly vehicle loan or lease'
+      id: "car-payment",
+      name: "Car Payment",
+      icon: "🚗",
+      description: "Monthly vehicle loan or lease",
     },
     {
-      id: 'insurance',
-      name: 'Insurance',
-      icon: '🛡️',
-      description: 'Health, auto, life insurance'
-    }
+      id: "insurance",
+      name: "Insurance",
+      icon: "🛡️",
+      description: "Health, auto, life insurance",
+    },
   ]);
 
   // Methods
   const openModal = () => {
     isOpen.value = true;
-    currentStep.value = 'register';
+    currentStep.value = "register";
   };
 
   const closeModal = () => {
     isOpen.value = false;
-    currentStep.value = 'register';
+    currentStep.value = "register";
   };
 
   const nextStep = () => {
-    if (currentStep.value === 'register') {
-      currentStep.value = 'income';
-    } else if (currentStep.value === 'income') {
-      currentStep.value = 'budget-types';
-    } else if (currentStep.value === 'budget-types') {
-      // Initialize budget amounts for selected types, defaulting to 0
-      budgetAmounts.value = selectedBudgetTypes.value.map(typeId => ({
-        budgetTypeId: typeId,
-        amount: 0
-      }));
-      currentStep.value = 'budget-amounts';
-    } else if (currentStep.value === 'budget-amounts') {
-      currentStep.value = 'confirmation';
-    } else if (currentStep.value === 'confirmation') {
-      currentStep.value = 'success';
+    if (currentStep.value === "register") {
+      currentStep.value = "income";
+    } else if (currentStep.value === "income") {
+      currentStep.value = "budget-types";
+    } else if (currentStep.value === "budget-types") {
+      // Budget amounts are already set in selectedBudgetTypes, just proceed
+      currentStep.value = "budget-amounts";
+    } else if (currentStep.value === "budget-amounts") {
+      currentStep.value = "confirmation";
+    } else if (currentStep.value === "confirmation") {
+      currentStep.value = "success";
     }
   };
 
   const previousStep = () => {
-    if (currentStep.value === 'income') {
-      currentStep.value = 'register';
-    } else if (currentStep.value === 'budget-types') {
-      currentStep.value = 'income';
-    } else if (currentStep.value === 'budget-amounts') {
-      currentStep.value = 'budget-types';
-    } else if (currentStep.value === 'confirmation') {
-      currentStep.value = 'budget-amounts';
+    if (currentStep.value === "income") {
+      currentStep.value = "register";
+    } else if (currentStep.value === "budget-types") {
+      currentStep.value = "income";
+    } else if (currentStep.value === "budget-amounts") {
+      currentStep.value = "budget-types";
+    } else if (currentStep.value === "confirmation") {
+      currentStep.value = "budget-amounts";
     }
   };
 
@@ -177,14 +184,31 @@ export function useRegisterModal() {
 
   const registerUser = async () => {
     isLoading.value = true;
+
+    const registerUserPayload = {
+      FirstName: "John",
+      LastName: "Doe",
+      Password: password.value,
+      email: email.value,
+      yearlyIncome: yearlyIncome.value,
+      budgetTypes: selectedBudgetTypes.value,
+    };
+
     try {
-      // Simulate API call for final registration
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Registering user with all data:", { 
-        email: email.value, 
+      const response = await apiRequest(API_ENDPOINTS.REGISTER_USER, {
+        method: "POST",
+        body: JSON.stringify(registerUserPayload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // const data = await response.json();
+      console.log("Registering user with all data:", {
+        email: email.value,
         yearlyIncome: yearlyIncome.value,
         budgetTypes: selectedBudgetTypes.value,
-        budgetAmounts: budgetAmounts.value
       });
       nextStep(); // Go to success step
     } catch (error) {
@@ -196,43 +220,42 @@ export function useRegisterModal() {
 
   // Budget management methods
   const toggleBudgetType = (budgetTypeId: string) => {
-    const index = selectedBudgetTypes.value.indexOf(budgetTypeId);
+    const index = selectedBudgetTypes.value.findIndex(
+      (b) => b.id === budgetTypeId
+    );
     if (index > -1) {
       selectedBudgetTypes.value.splice(index, 1);
     } else {
-      selectedBudgetTypes.value.push(budgetTypeId);
+      selectedBudgetTypes.value.push({ id: budgetTypeId, amount: 0 });
     }
   };
 
   const updateBudgetAmount = (budgetTypeId: string, amount: number) => {
-    const budgetIndex = budgetAmounts.value.findIndex(b => b.budgetTypeId === budgetTypeId);
-    if (budgetIndex > -1 && budgetAmounts.value[budgetIndex]) {
-      budgetAmounts.value[budgetIndex].amount = amount;
-    } else {
-      budgetAmounts.value.push({ budgetTypeId, amount });
+    const budgetIndex = selectedBudgetTypes.value.findIndex(
+      (b) => b.id === budgetTypeId
+    );
+    if (budgetIndex > -1 && selectedBudgetTypes.value[budgetIndex]) {
+      selectedBudgetTypes.value[budgetIndex].amount = amount;
     }
   };
 
   const getBudgetAmount = (budgetTypeId: string) => {
-    const budget = budgetAmounts.value.find(b => b.budgetTypeId === budgetTypeId);
+    const budget = selectedBudgetTypes.value.find((b) => b.id === budgetTypeId);
     return budget?.amount || 0;
   };
 
   const getTotalBudgetAmount = () => {
-    return budgetAmounts.value.reduce((total, budget) => {
+    return selectedBudgetTypes.value.reduce((total, budget) => {
       return total + budget.amount;
     }, 0);
   };
-
-
 
   const resetForm = () => {
     email.value = "";
     password.value = "";
     yearlyIncome.value = null;
     selectedBudgetTypes.value = [];
-    budgetAmounts.value = [];
-    currentStep.value = 'register';
+    currentStep.value = "register";
   };
 
   return {
@@ -241,7 +264,6 @@ export function useRegisterModal() {
     password,
     yearlyIncome,
     selectedBudgetTypes,
-    budgetAmounts,
     isOpen,
     isLoading,
     currentStep,

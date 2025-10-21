@@ -23,13 +23,13 @@
             <div class="bg-muted/50 p-4 rounded-lg">
                 <h4 class="font-medium mb-2">Monthly Budget Plan</h4>
                 <div class="space-y-2">
-                    <div v-for="budgetTypeId in selectedBudgetTypes" :key="budgetTypeId"
+                    <div v-for="budgetType in selectedBudgetTypes" :key="budgetType.id"
                         class="flex justify-between items-center text-sm">
                         <div class="flex items-center gap-2">
-                            <span>{{ getBudgetType(budgetTypeId)?.icon }}</span>
-                            <span>{{ getBudgetType(budgetTypeId)?.name }}</span>
+                            <span>{{ getBudgetType(budgetType.id)?.icon }}</span>
+                            <span>{{ getBudgetType(budgetType.id)?.name }}</span>
                         </div>
-                        <span class="font-medium">${{ getBudgetAmount(budgetTypeId) }}</span>
+                        <span class="font-medium">${{ budgetType.amount }}</span>
                     </div>
                     <div class="border-t pt-2 flex justify-between items-center font-medium">
                         <span>Total Monthly Budget:</span>
@@ -43,14 +43,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BudgetAmount, BudgetType } from "../../useRegisterModal"
+import type { SelectedBudgetType, BudgetType } from "../../useRegisterModal"
 
 interface Props {
     email: string
     yearlyIncome: number | null
     availableBudgetTypes: BudgetType[]
-    budgetAmounts: BudgetAmount[]
-    selectedBudgetTypes: string[]
+    selectedBudgetTypes: SelectedBudgetType[]
 }
 
 const props = defineProps<Props>()
@@ -59,12 +58,7 @@ const getBudgetType = (budgetTypeId: string) => {
     return props.availableBudgetTypes.find(bt => bt.id === budgetTypeId)
 }
 
-const getBudgetAmount = (budgetTypeId: string) => {
-    const budget = props.budgetAmounts.find(ba => ba.budgetTypeId === budgetTypeId)
-    return budget?.amount || 0
-}
-
 const totalBudget = computed(() => {
-    return props.budgetAmounts.reduce((total, budget) => total + budget.amount, 0)
+    return props.selectedBudgetTypes.reduce((total, budget) => total + budget.amount, 0)
 })
 </script>

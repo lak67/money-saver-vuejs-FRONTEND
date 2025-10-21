@@ -123,7 +123,6 @@ const emit = defineEmits<Emits>()
 const {
     searchTerm,
     showRecommended,
-    budgetTypes,
     isLoading,
     error,
     filteredBudgetTypes,
@@ -131,15 +130,14 @@ const {
     getOtherTypes,
     getSelectionSummary,
     clearSearch,
-    selectRecommended,
     clearAll,
     refreshBudgetTypes
 } = useBudgetTypesView()
 
-// Event handlers
-const handleSelectRecommended = () => {
-    selectRecommended((id: string) => emit('toggle', id), props.selectedBudgetTypes)
-}
+// Event handlers  
+// const handleSelectRecommended = () => {
+//     selectRecommended((id: string) => emit('toggle', id), props.selectedBudgetTypes)
+// }
 
 const handleClearAll = () => {
     clearAll(props.selectedBudgetTypes, (id: string) => emit('toggle', id))
