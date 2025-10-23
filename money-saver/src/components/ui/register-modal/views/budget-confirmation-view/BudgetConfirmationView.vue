@@ -29,7 +29,7 @@
                             <span>{{ getBudgetType(budgetType.id)?.icon }}</span>
                             <span>{{ getBudgetType(budgetType.id)?.name }}</span>
                         </div>
-                        <span class="font-medium">${{ budgetType.amount }}</span>
+                        <span class="font-medium">${{ budgetType.total_amount }}</span>
                     </div>
                     <div class="border-t pt-2 flex justify-between items-center font-medium">
                         <span>Total Monthly Budget:</span>
@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SelectedBudgetType, BudgetType } from "../../useRegisterModal"
+import type { BudgetType, SelectedBudgetType } from "../../useRegisterModal"
 
 interface Props {
     email: string
@@ -59,6 +59,6 @@ const getBudgetType = (budgetTypeId: string) => {
 }
 
 const totalBudget = computed(() => {
-    return props.selectedBudgetTypes.reduce((total, budget) => total + budget.amount, 0)
+    return props.selectedBudgetTypes.reduce((total, budget) => total + budget.total_amount, 0)
 })
 </script>

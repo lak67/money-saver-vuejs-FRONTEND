@@ -1,5 +1,5 @@
 import { computed, ref } from "vue";
-import type { SelectedBudgetType, BudgetType } from "../../useRegisterModal";
+import type { BudgetType, SelectedBudgetType } from "../../useRegisterModal";
 
 export function useBudgetAmountsView() {
   // Local state
@@ -22,7 +22,7 @@ export function useBudgetAmountsView() {
   const getTotalBudgetAmount = computed(
     () => (budgetAmounts: SelectedBudgetType[]) => {
       return budgetAmounts.reduce((total, budget) => {
-        const amount = parseInt(String(budget.amount)) || 0;
+        const amount = parseInt(String(budget.total_amount)) || 0;
         return total + amount;
       }, 0);
     }
@@ -65,7 +65,7 @@ export function useBudgetAmountsView() {
   const validateAmounts = computed(
     () => (budgetAmounts: SelectedBudgetType[]) => {
       return budgetAmounts.every((budget) => {
-        const amount = parseInt(String(budget.amount));
+        const amount = parseInt(String(budget.total_amount));
         return !isNaN(amount) && amount > 0;
       });
     }

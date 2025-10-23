@@ -18,7 +18,7 @@ export interface BudgetType {
 
 export interface SelectedBudgetType {
   id: string;
-  amount: number;
+  total_amount: number;
 }
 
 export function useRegisterModal() {
@@ -64,7 +64,7 @@ export function useRegisterModal() {
   });
 
   const isBudgetAmountsFormValid = computed(() => {
-    return selectedBudgetTypes.value.every((budget) => budget.amount >= 0);
+    return selectedBudgetTypes.value.every((budget) => budget.total_amount >= 0);
   });
 
   const currentStepTitle = computed(() => {
@@ -186,13 +186,15 @@ export function useRegisterModal() {
     isLoading.value = true;
 
     const registerUserPayload = {
-      FirstName: "John",
-      LastName: "Doe",
-      Password: password.value,
+      first_name: "John",
+      last_name: "Doe",
+      password: password.value,
       email: email.value,
-      yearlyIncome: yearlyIncome.value,
-      budgetTypes: selectedBudgetTypes.value,
+      income: yearlyIncome.value,
+      budget_types: selectedBudgetTypes.value,
     };
+
+    console.log(registerUserPayload);
 
     try {
       const response = await apiRequest(API_ENDPOINTS.REGISTER_USER, {
@@ -226,7 +228,7 @@ export function useRegisterModal() {
     if (index > -1) {
       selectedBudgetTypes.value.splice(index, 1);
     } else {
-      selectedBudgetTypes.value.push({ id: budgetTypeId, amount: 0 });
+      selectedBudgetTypes.value.push({ id: budgetTypeId, total_amount: 0 });
     }
   };
 
@@ -235,18 +237,18 @@ export function useRegisterModal() {
       (b) => b.id === budgetTypeId
     );
     if (budgetIndex > -1 && selectedBudgetTypes.value[budgetIndex]) {
-      selectedBudgetTypes.value[budgetIndex].amount = amount;
+      selectedBudgetTypes.value[budgetIndex].total_amount = amount;
     }
   };
 
   const getBudgetAmount = (budgetTypeId: string) => {
     const budget = selectedBudgetTypes.value.find((b) => b.id === budgetTypeId);
-    return budget?.amount || 0;
+    return budget?.total_amount || 0;
   };
 
   const getTotalBudgetAmount = () => {
     return selectedBudgetTypes.value.reduce((total, budget) => {
-      return total + budget.amount;
+      return total + budget.total_amount;
     }, 0);
   };
 

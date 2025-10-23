@@ -15,7 +15,7 @@
                 </div>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                    <Input :id="budgetType.id" type="number" :value="budgetType.amount"
+                    <Input :id="budgetType.id" type="number" :value="budgetType.total_amount"
                         @input="handleAmountUpdate(budgetType.id, $event)" placeholder="0" class="pl-6" min="0"
                         step="10" />
                 </div>
@@ -38,7 +38,7 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { computed } from "vue"
-import type { SelectedBudgetType, BudgetType } from "../../useRegisterModal"
+import type { BudgetType, SelectedBudgetType } from "../../useRegisterModal"
 
 interface Props {
     availableBudgetTypes: BudgetType[]
@@ -63,6 +63,6 @@ const handleAmountUpdate = (budgetTypeId: string, event: Event) => {
 }
 
 const totalAmount = computed(() => {
-    return props.selectedBudgetTypes.reduce((total, budget) => total + budget.amount, 0)
+    return props.selectedBudgetTypes.reduce((total, budget) => total + budget.total_amount, 0)
 })
 </script>
