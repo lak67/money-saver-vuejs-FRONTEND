@@ -7,7 +7,7 @@
             <div class="col-span-3">
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                    <Input id="amount" :model-value="amount" @update:model-value="handleAmountUpdate"
+                    <Input id="amount" :model-value="total_amount" @update:model-value="handleAmountUpdate"
                         @blur="handleAmountBlur" class="pl-8" :class="{ 'border-red-500': amountError }"
                         placeholder="0.00" type="number" step="0.01" min="0" />
                 </div>
@@ -47,12 +47,12 @@ import { Label } from "@/components/ui/label"
 import { useInputView } from "./useInputView"
 
 interface Props {
-    amount: string
+    total_amount: string
     description: string
 }
 
 interface Emits {
-    'update:amount': [value: string]
+    'update:total_amount': [value: string]
     'update:description': [value: string]
 }
 
@@ -73,7 +73,7 @@ const {
 // Event handlers
 const handleAmountUpdate = (value: string | number) => {
     const stringValue = String(value)
-    emit('update:amount', stringValue)
+    emit('update:total_amount', stringValue)
     if (amountError.value) {
         validateAmount(stringValue) // Re-validate if there was an error
     }
@@ -88,11 +88,11 @@ const handleDescriptionUpdate = (value: string | number) => {
 }
 
 const handleAmountBlur = () => {
-    if (validateAmount(props.amount) && props.amount) {
+    if (validateAmount(props.total_amount) && props.total_amount) {
         // Format the amount when valid
-        const formatted = formatAmount.value(props.amount)
-        if (formatted !== props.amount) {
-            emit('update:amount', formatted)
+        const formatted = formatAmount.value(props.total_amount)
+        if (formatted !== props.total_amount) {
+            emit('update:total_amount', formatted)
         }
     }
 }
@@ -108,7 +108,7 @@ const selectCategory = (category: string) => {
 // Expose validation method for parent component
 defineExpose({
     validateForm: () => {
-        const isAmountValid = validateAmount(props.amount)
+        const isAmountValid = validateAmount(props.total_amount)
         const isDescriptionValid = validateDescription(props.description)
         return isAmountValid && isDescriptionValid
     },

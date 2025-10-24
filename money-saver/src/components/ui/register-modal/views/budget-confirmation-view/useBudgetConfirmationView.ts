@@ -9,7 +9,7 @@ export function useBudgetConfirmationView() {
   // Computed properties
   const getTotalBudgetAmount = computed(() => (budgetAmounts: BudgetAmount[]) => {
     return budgetAmounts.reduce((total, budget) => {
-      const amount = parseInt(String(budget.amount)) || 0
+      const amount = parseInt(String(budget.total_amount)) || 0
       return total + amount
     }, 0)
   })
@@ -46,10 +46,10 @@ export function useBudgetConfirmationView() {
           id: budget.budgetTypeId,
           name: budgetType?.name || 'Unknown',
           icon: budgetType?.icon || '📊',
-          amount: parseInt(String(budget.amount)) || 0,
-          formattedAmount: formatCurrency.value(budget.amount)
+          total_amount: parseInt(String(budget.total_amount)) || 0,
+          formattedAmount: formatCurrency.value(budget.total_amount)
         }
-      }).sort((a, b) => b.amount - a.amount) // Sort by amount descending
+      }).sort((a, b) => b.total_amount - a.total_amount) // Sort by amount descending
     }
     
     return summary
@@ -77,26 +77,6 @@ export function useBudgetConfirmationView() {
     return text
   })
 
-  const validateConfirmation = computed(() => {
-    return confirmationChecked.value
-  })
-
-  // Methods
-  const copyBudgetSummary = async (
-    email: string,
-    budgetAmounts: BudgetAmount[],
-    availableTypes: BudgetType[]
-  ) => {
-    try {
-      const summaryText = generateBudgetText.value(email, budgetAmounts, availableTypes)
-      await navigator.clipboard.writeText(summaryText)
-      return true
-    } catch (error) {
-      console.error('Failed to copy budget summary:', error)
-      return false
-    }
-  }
-
   const resetConfirmation = () => {
     confirmationChecked.value = false
     isSubmitting.value = false
@@ -113,10 +93,8 @@ export function useBudgetConfirmationView() {
     getBudgetTypeById,
     getBudgetSummary,
     generateBudgetText,
-    validateConfirmation,
 
     // Methods
-    copyBudgetSummary,
     resetConfirmation
   }
 }

@@ -25,7 +25,7 @@
                     <span v-if="showPercentage"
                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">%</span>
                     <Input :id="`amount-${budget.budgetTypeId}`"
-                        :model-value="showPercentage ? getPercentageValue : budget.amount"
+                        :model-value="showPercentage ? getPercentageValue : budget.total_amount"
                         @update:model-value="handleAmountUpdate" type="number" step="0.01" min="0"
                         :class="showPercentage ? 'pr-8' : 'pl-8'" :placeholder="showPercentage ? '0' : '0.00'" />
                 </div>
@@ -84,7 +84,7 @@ const formatCurrency = computed(() => (amount: string | number) => {
 })
 
 const getCurrentPercentage = computed(() => {
-    const amount = parseInt(String(props.budget.amount)) || 0
+    const amount = parseInt(String(props.budget.total_amount)) || 0
     const income = parseInt(props.totalIncome) || 0
 
     if (income === 0) return 0

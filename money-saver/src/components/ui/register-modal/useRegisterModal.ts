@@ -1,5 +1,6 @@
-import { API_ENDPOINTS, apiRequest } from "@/lib/api";
 import { computed, ref } from "vue";
+
+import { UserServices } from "../../../services/user/UserServices";
 
 export type ModalStep =
   | "register"
@@ -14,6 +15,11 @@ export interface BudgetType {
   name: string;
   icon: string;
   description: string;
+}
+
+export interface BudgetAmount {
+  budgetTypeId: string;
+  total_amount: number;
 }
 
 export interface SelectedBudgetType {
@@ -194,30 +200,18 @@ export function useRegisterModal() {
       budget_types: selectedBudgetTypes.value,
     };
 
-    console.log(registerUserPayload);
-
     try {
-      const response = await apiRequest(API_ENDPOINTS.REGISTER_USER, {
-        method: "POST",
-        body: JSON.stringify(registerUserPayload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // const data = await response.json();
-      console.log("Registering user with all data:", {
-        email: email.value,
-        yearlyIncome: yearlyIncome.value,
-        budgetTypes: selectedBudgetTypes.value,
-      });
+      const result = await UserServices().registerUser(registerUserPayload);
+      isLoading.value = true;
+      console.log('Registration result:', result);
       nextStep(); // Go to success step
     } catch (error) {
       console.error("Error registering user:", error);
     } finally {
       isLoading.value = false;
     }
+
+    //login user
   };
 
   // Budget management methods

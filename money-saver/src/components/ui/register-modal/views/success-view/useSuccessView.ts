@@ -5,8 +5,8 @@ export function useSuccessView() {
   const showAnimation = ref(true)
   
   // Computed properties for formatting display data
-  const formatCurrency = computed(() => (amount: string) => {
-    const numericAmount = parseFloat(amount)
+  const formatCurrency = computed(() => (total_amount: string) => {
+    const numericAmount = parseFloat(total_amount)
     if (isNaN(numericAmount)) return '$0.00'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -49,10 +49,10 @@ export function useSuccessView() {
     }
   }
 
-  const generateSummaryText = (email: string, amount: string, description: string) => {
+  const generateSummaryText = (email: string, total_amount: string, description: string) => {
     return `Expense Summary:
 Email: ${formatEmail.value(email)}
-Amount: ${formatCurrency.value(amount)}
+Amount: ${formatCurrency.value(total_amount)}
 Description: ${formatDescription.value(description)}
 Date: ${getCurrentDateTime.value}`
   }
