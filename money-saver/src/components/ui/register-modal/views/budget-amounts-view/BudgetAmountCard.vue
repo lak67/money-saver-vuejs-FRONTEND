@@ -8,22 +8,11 @@
                     <p class="text-xs text-muted-foreground">{{ budgetType.description }}</p>
                 </div>
             </div>
-            <div v-if="recommendedPercentage && totalIncome && parseFloat(totalIncome) > 0" class="text-right">
-                <div class="text-xs text-muted-foreground">Recommended</div>
-                <div class="text-xs font-medium text-primary">{{ recommendedPercentage }}%</div>
-            </div>
         </div>
 
         <div class="flex gap-3 items-end">
             <div class="flex-1">
-                <Label :for="`amount-${budget.budgetTypeId}`" class="text-xs text-muted-foreground">
-                    {{ showPercentage ? 'Percentage of Income' : 'Monthly Amount' }}
-                </Label>
                 <div class="relative mt-1">
-                    <span v-if="!showPercentage"
-                        class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                    <span v-if="showPercentage"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">%</span>
                     <Input :id="`amount-${budget.budgetTypeId}`"
                         :model-value="showPercentage ? getPercentageValue : budget.total_amount"
                         @update:model-value="handleAmountUpdate" type="number" step="0.01" min="0"
@@ -53,7 +42,6 @@
 
 <script setup lang="ts">
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { computed } from 'vue'
 import type { BudgetAmount, BudgetType } from "../../useRegisterModal"
 

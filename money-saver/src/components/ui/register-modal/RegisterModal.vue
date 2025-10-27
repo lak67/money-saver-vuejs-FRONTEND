@@ -9,7 +9,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog"
 import { useRegisterModal } from "./useRegisterModal"
-import { BudgetAmountsView, BudgetConfirmationView, BudgetTypesView, IncomeView, RegisterView, SuccessView } from "./views"
+import { BudgetAmountsView, BudgetConfirmationView, BudgetTypesView, IncomeView, LoginView, RegisterView, SuccessView } from "./views"
 
 // Use the composable
 const {
@@ -18,14 +18,20 @@ const {
     yearlyIncome,
     selectedBudgetTypes,
     isLoading,
+    currentMode,
     currentStep,
     currentStepTitle,
     passwordValidation,
     isRegisterFormValid,
+    isLoginFormValid,
     isIncomeFormValid,
     isBudgetTypesFormValid,
     isBudgetAmountsFormValid,
     availableBudgetTypes,
+    finalFields,
+    switchToLogin,
+    switchToRegister,
+    submitLogin,
     submitRegister,
     submitIncome,
     submitBudgetTypes,
@@ -43,13 +49,17 @@ const {
     <Dialog>
         <DialogTrigger as-child>
             <Button class="" variant="default">
-                Money Saver
+                Get Started
             </Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-[500px] max-h-[75vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>{{ currentStepTitle }}</DialogTitle>
             </DialogHeader>
+
+            <!-- Login Step -->
+            <LoginView v-if="currentStep === 'login'" :email="email" :password="password" @update:email="email = $event"
+                @update:password="password = $event" />
 
             <!-- Register Step -->
             <RegisterView v-if="currentStep === 'register'" :email="email" :password="password"
@@ -66,26 +76,50 @@ const {
 
             <!-- Budget Amounts Step -->
             <BudgetAmountsView v-if="currentStep === 'budget-amounts'" :available-budget-types="availableBudgetTypes"
-                :selected-budget-types="selectedBudgetTypes"
-                @update-amount="updateBudgetAmount" />
+                :selected-budget-types="selectedBudgetTypes" @update-amount="updateBudgetAmount" />
 
             <!-- Confirmation Step -->
             <BudgetConfirmationView v-if="currentStep === 'confirmation'" :email="email" :yearly-income="yearlyIncome"
-                :available-budget-types="availableBudgetTypes"
-                :selected-budget-types="selectedBudgetTypes" />
+                :available-budget-types="availableBudgetTypes" :selected-budget-types="selectedBudgetTypes" />
 
             <!-- Success Step -->
-            <SuccessView v-if="currentStep === 'success'" :email="email" :yearly-income="yearlyIncome" />
+            <SuccessView v-if="currentStep === 'success'" :finalFields="finalFields" />
 
             <DialogFooter class="gap-2">
+                <!-- Login Step Footer -->
+                <template v-if="currentStep === 'login'">
+                    <div class="flex items-center justify-between w-full">
+                        <button type="button" @click="switchToRegister"
+                            class="relative text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group">
+                            Register
+                            <span
+                                class="absolute bottom-0 left-0 w-0 h-0.5 bg-foreground transition-all duration-300 ease-out group-hover:w-full"></span>
+                        </button>
+                        <Button type="submit" @click="submitLogin" :disabled="!isLoginFormValid || isLoading">
+                            <span v-if="isLoading">Signing in...</span>
+                            <span v-else>Sign In</span>
+                        </Button>
+                    </div>
+                </template>
+
                 <!-- Register Step Footer -->
                 <template v-if="currentStep === 'register'">
-                    <Button type="button" variant="default" @click="resetForm" :disabled="isLoading">
-                        Reset
-                    </Button>
-                    <Button type="submit" @click="submitRegister" :disabled="!isRegisterFormValid || isLoading">
-                        Next →
-                    </Button>
+                    <div class="flex items-center justify-between w-full">
+                        <button type="button" @click="switchToLogin"
+                            class="relative text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group">
+                            Login
+                            <span
+                                class="absolute bottom-0 left-0 w-0 h-0.5 bg-foreground transition-all duration-300 ease-out group-hover:w-full"></span>
+                        </button>
+                        <div class="flex gap-2">
+                            <Button type="button" variant="outline" @click="resetForm" :disabled="isLoading">
+                                Reset
+                            </Button>
+                            <Button type="submit" @click="submitRegister" :disabled="!isRegisterFormValid || isLoading">
+                                Next →
+                            </Button>
+                        </div>
+                    </div>
                 </template>
 
                 <!-- Income Step Footer -->

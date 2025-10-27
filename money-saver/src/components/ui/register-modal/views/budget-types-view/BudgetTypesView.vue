@@ -119,7 +119,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-// Use the composable
+// Use the composable but pass the prop data
 const {
     searchTerm,
     showRecommended,
@@ -132,7 +132,7 @@ const {
     clearSearch,
     clearAll,
     refreshBudgetTypes
-} = useBudgetTypesView()
+} = useBudgetTypesView(props.availableBudgetTypes)
 
 // Event handlers  
 // const handleSelectRecommended = () => {

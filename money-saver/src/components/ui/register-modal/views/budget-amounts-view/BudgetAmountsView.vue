@@ -11,11 +11,11 @@
             <div v-for="budgetType in selectedBudgetTypes" :key="budgetType.id" class="space-y-2">
                 <div class="flex items-center gap-2">
                     <span>{{ getBudgetType(budgetType.id)?.icon }}</span>
-                    <Label :for="budgetType.id">{{ getBudgetType(budgetType.id)?.name }}</Label>
+                    <Label :for="String(budgetType.id)">{{ getBudgetType(budgetType.id)?.name }}</Label>
                 </div>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                    <Input :id="budgetType.id" type="number" :value="budgetType.total_amount"
+                    <Input :id="String(budgetType.id)" type="number" :value="budgetType.total_amount"
                         @input="handleAmountUpdate(budgetType.id, $event)" placeholder="0" class="pl-6" min="0"
                         step="10" />
                 </div>
@@ -52,8 +52,21 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
+console.log('BudgetAmountsView - Available budget types:', props.availableBudgetTypes)
+console.log('BudgetAmountsView - Selected budget types:', props.selectedBudgetTypes)
+
+// Create a computed map of budget types for efficient lookups
+const budgetTypeMap = computed(() => {
+    const map = new Map<string, BudgetType>()
+    props.availableBudgetTypes.forEach(bt => {
+        map.set(bt.id, bt)
+    })
+    console.log('Budget type map created:', map)
+    return map
+})
+
 const getBudgetType = (budgetTypeId: string) => {
-    return props.availableBudgetTypes.find(bt => bt.id === budgetTypeId)
+    return budgetTypeMap.value.get(budgetTypeId)
 }
 
 const handleAmountUpdate = (budgetTypeId: string, event: Event) => {

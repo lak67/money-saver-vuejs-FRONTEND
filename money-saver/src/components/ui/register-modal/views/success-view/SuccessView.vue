@@ -15,11 +15,11 @@
             <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
                     <span class="text-green-700">Account:</span>
-                    <span class="font-medium">{{ email }}</span>
+                    <span class="font-medium">{{ finalFields.email }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-green-700">Yearly Income:</span>
-                    <span class="font-medium">${{ yearlyIncome?.toLocaleString() || '0' }}</span>
+                    <span class="font-medium">${{ finalFields.yearlyIncome?.toLocaleString() || '0' }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-green-700">Budget Categories:</span>
@@ -39,8 +39,10 @@
 
 <script setup lang="ts">
 interface Props {
-    email: string
-    yearlyIncome: number | null
+    finalFields: {
+        email: string
+        yearlyIncome: number | null
+    }
 }
 
 defineProps<Props>()
