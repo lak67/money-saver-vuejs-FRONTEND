@@ -33,6 +33,10 @@ export function UserServices() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+
+      // set cookies
+      document.cookie = `token=${data.token}; path=/;`;
+
       return data;
     } catch (error) {
       console.error("Error logging in user:", error);
