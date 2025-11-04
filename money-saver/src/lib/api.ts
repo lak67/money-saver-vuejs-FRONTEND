@@ -43,6 +43,7 @@ export const apiRequest = async (
   const url = buildApiUrl(endpoint);
   const defaultOptions: RequestInit = {
     headers: getDefaultHeaders(),
+    credentials: "include",
     ...options,
   };
 

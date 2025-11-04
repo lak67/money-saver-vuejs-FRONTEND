@@ -34,8 +34,7 @@ export function UserServices() {
       }
       const data = await response.json();
 
-      // set cookies
-      document.cookie = `token=${data.token}; path=/;`;
+      // console.log('Login response data:', data);
 
       return data;
     } catch (error) {

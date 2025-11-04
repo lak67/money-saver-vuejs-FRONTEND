@@ -11,9 +11,9 @@
                 </p>
 
                 <!-- Registration Modal Trigger -->
-                <div class="mb-8">
+                <!-- <div class="mb-8">
                     <RegisterModal />
-                </div>
+                </div> -->
 
                 <!-- Feature Cards -->
                 <div class="grid md:grid-cols-3 gap-8 mt-12">
@@ -50,5 +50,4 @@
 </template>
 
 <script setup lang="ts">
-import RegisterModal from '@/components/ui/register-modal/RegisterModal.vue';
 </script>

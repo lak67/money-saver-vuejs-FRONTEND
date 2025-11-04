@@ -15,6 +15,8 @@
                         {{ link.name }}
                     </router-link>
 
+                    <RegisterModal />
+
                     <!-- Theme Toggle -->
                     <div class="ml-4 pl-4 border-l border-border">
                         <ThemeToggle />
@@ -26,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import RegisterModal from '@/components/ui/register-modal/RegisterModal.vue'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useRoute } from 'vue-router'
 
