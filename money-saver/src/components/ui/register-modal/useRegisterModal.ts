@@ -40,7 +40,7 @@ export function useRegisterModal() {
   const isLoading = ref(false);
   const currentMode = ref<ModalMode>("login");
   const currentStep = ref<ModalStep>("login");
-  
+
   // Budget types state - initialize with fallback data
   const defaultBudgetTypes: BudgetType[] = [
     {
@@ -74,7 +74,7 @@ export function useRegisterModal() {
       description: "Health, auto, life insurance",
     },
   ];
-  
+
   const budgetTypes = ref<BudgetType[]>(defaultBudgetTypes);
   const budgetTypesLoading = ref(false);
   const budgetTypesError = ref<string | null>(null);
@@ -159,7 +159,7 @@ export function useRegisterModal() {
   // Fetch budget types from API
   const fetchBudgetTypes = async (): Promise<BudgetType[]> => {
     try {
-      console.log('Fetching budget types from API...');
+      console.log("Fetching budget types from API...");
       budgetTypesLoading.value = true;
       budgetTypesError.value = null;
 
@@ -167,7 +167,7 @@ export function useRegisterModal() {
         method: "POST",
       });
 
-      console.log('API response status:', response.status);
+      console.log("API response status:", response.status);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -183,15 +183,16 @@ export function useRegisterModal() {
         icon: item.icon || item.Icon || "💰",
       }));
 
-      console.log('Fetched budget types from API:', fetchedBudgetTypes);
+      console.log("Fetched budget types from API:", fetchedBudgetTypes);
       budgetTypes.value = fetchedBudgetTypes;
-      console.log('Budget types reactive value set to:', budgetTypes.value);
+      console.log("Budget types reactive value set to:", budgetTypes.value);
       return fetchedBudgetTypes;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch budget types";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch budget types";
       budgetTypesError.value = errorMessage;
       console.error("Error fetching budget types:", err);
-      
+
       // Keep the default budget types that were already initialized
       console.log("Using default budget types due to API error");
       return budgetTypes.value;
@@ -202,7 +203,7 @@ export function useRegisterModal() {
 
   // Available budget types (initialized with defaults, updated from API)
   const availableBudgetTypes = computed(() => {
-    console.log('Available budget types computed:', budgetTypes.value);
+    console.log("Available budget types computed:", budgetTypes.value);
     return budgetTypes.value;
   });
 
@@ -213,7 +214,7 @@ export function useRegisterModal() {
     currentStep.value = "login";
     // Ensure budget types are fetched when modal opens
     if (budgetTypes.value.length === 0) {
-      console.log('Fetching budget types on modal open...');
+      console.log("Fetching budget types on modal open...");
       fetchBudgetTypes();
     }
   };
@@ -283,26 +284,25 @@ export function useRegisterModal() {
 
   const submitLogin = async () => {
     if (!isLoginFormValid.value) return;
-    
+
     isLoading.value = true;
     try {
       const loginPayload = {
         email: email.value,
-        password: password.value
+        password: password.value,
       };
 
-      console.log('Login payload:', loginPayload);
-      
-      // Call UserServices login method  
+      console.log("Login payload:", loginPayload);
+
+      // Call UserServices login method
       const result = await UserServices().loginUser(loginPayload);
-      console.log('Login successful:', result);
-      
+      console.log("Login successful:", result);
+
       // Handle successful login (you might want to emit an event or navigate)
       // For now, we'll just close the modal
       closeModal();
-      
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
       // Handle login error (you might want to show an error message)
     } finally {
       isLoading.value = false;
@@ -333,19 +333,16 @@ export function useRegisterModal() {
     isLoading.value = true;
 
     const registerUserPayload = {
-      first_name: "John",
-      last_name: "Doe",
+      firstName: "John",
+      lastName: "Doe",
       password: password.value,
       email: email.value,
-      income: yearlyIncome.value,
-      budget_types: selectedBudgetTypes.value.map(bt => ({
-        id: parseInt(bt.id, 10), // Convert string ID to integer
-        total_amount: bt.total_amount
-      })),
+      yearlyIncome: yearlyIncome.value || undefined,
+      budgetTypes: selectedBudgetTypes.value,
     };
 
-    console.log('Registration payload being sent:', registerUserPayload);
-    console.log('Budget types with converted IDs:', registerUserPayload.budget_types);
+    console.log("Registration payload being sent:", registerUserPayload);
+    console.log("Budget types:", registerUserPayload.budgetTypes);
 
     try {
       await UserServices().registerUser(registerUserPayload);
@@ -369,8 +366,11 @@ export function useRegisterModal() {
   // Budget management methods
   const toggleBudgetType = (budgetTypeId: string) => {
     console.log(`Toggling budget type: ${budgetTypeId}`);
-    console.log('Available budget types:', budgetTypes.value.map(bt => ({ id: bt.id, name: bt.name })));
-    
+    console.log(
+      "Available budget types:",
+      budgetTypes.value.map((bt) => ({ id: bt.id, name: bt.name }))
+    );
+
     const index = selectedBudgetTypes.value.findIndex(
       (b) => b.id === budgetTypeId
     );
@@ -379,8 +379,11 @@ export function useRegisterModal() {
     } else {
       selectedBudgetTypes.value.push({ id: budgetTypeId, total_amount: 0 });
     }
-    
-    console.log('Selected budget types after toggle:', selectedBudgetTypes.value);
+
+    console.log(
+      "Selected budget types after toggle:",
+      selectedBudgetTypes.value
+    );
   };
 
   const updateBudgetAmount = (budgetTypeId: string, amount: number) => {
@@ -458,7 +461,7 @@ export function useRegisterModal() {
     getTotalBudgetAmount,
     resetForm,
     fetchBudgetTypes,
-    
+
     // Budget types API state
     budgetTypesLoading,
     budgetTypesError,

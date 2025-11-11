@@ -18,7 +18,6 @@ const {
     yearlyIncome,
     selectedBudgetTypes,
     isLoading,
-    currentMode,
     currentStep,
     currentStepTitle,
     passwordValidation,
