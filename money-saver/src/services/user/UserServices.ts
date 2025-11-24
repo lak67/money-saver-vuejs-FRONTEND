@@ -14,12 +14,12 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
-  yearlyIncome?: number;
-  budgetTypes?: any[];
+  income?: number;
+  budget_types?: any[];
 }
 
 export interface AuthResponse {

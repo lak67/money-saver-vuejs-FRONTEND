@@ -1,6 +1,6 @@
+import { AuthTokenManager } from "@/utils/auth";
 import type { Module } from "vuex";
 import type { RootState } from "../index";
-import { AuthTokenManager } from "@/utils/auth";
 
 // Auth state interface
 export interface AuthState {
@@ -14,8 +14,8 @@ export interface AuthState {
 // User interface
 export interface User {
   id: string | number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
 }
 
@@ -26,12 +26,12 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
-  yearlyIncome?: number;
-  budgetTypes?: any[];
+  income?: number;
+  budget_types?: any[];
 }
 
 // API Response interfaces
@@ -219,12 +219,12 @@ const getters = {
   user: (state: AuthState) => state.user,
   userFullName: (state: AuthState) => {
     if (state.user) {
-      return `${state.user.firstName} ${state.user.lastName}`.trim();
+      return `${state.user.first_name} ${state.user.last_name}`.trim();
     }
     return null;
   },
-  userFirstName: (state: AuthState) => state.user?.firstName || null,
-  userLastName: (state: AuthState) => state.user?.lastName || null,
+  userFirstName: (state: AuthState) => state.user?.first_name || null,
+  userLastName: (state: AuthState) => state.user?.last_name || null,
   userEmail: (state: AuthState) => state.user?.email || null,
   token: (state: AuthState) => state.token,
   loading: (state: AuthState) => state.loading,

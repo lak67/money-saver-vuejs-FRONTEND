@@ -333,16 +333,16 @@ export function useRegisterModal() {
     isLoading.value = true;
 
     const registerUserPayload = {
-      firstName: "John",
-      lastName: "Doe",
+      first_name: "John",
+      last_name: "Doe",
       password: password.value,
       email: email.value,
-      yearlyIncome: yearlyIncome.value || undefined,
-      budgetTypes: selectedBudgetTypes.value,
+      income: yearlyIncome.value || undefined,
+      budget_types: selectedBudgetTypes.value,
     };
 
     console.log("Registration payload being sent:", registerUserPayload);
-    console.log("Budget types:", registerUserPayload.budgetTypes);
+    console.log("Budget types:", registerUserPayload.budget_types);
 
     try {
       await UserServices().registerUser(registerUserPayload);
