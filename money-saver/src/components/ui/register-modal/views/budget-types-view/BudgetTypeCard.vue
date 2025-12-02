@@ -10,7 +10,7 @@
             <div class="flex items-start gap-3 flex-1">
                 <div class="text-2xl">{{ budgetType.icon }}</div>
                 <div class="flex-1 min-w-0">
-                    <h5 class="font-medium text-sm">{{ budgetType.name }}</h5>
+                    <h5 class="font-medium text-sm">{{ budgetType.type_name }}hello world</h5>
                     <p class="text-xs text-muted-foreground mt-1">{{ budgetType.description }}</p>
                 </div>
             </div>

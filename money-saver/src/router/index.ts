@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuth } from '../composables/useAuth'
 import BudgetView from '../views/BudgetView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import ExpensesView from '../views/ExpensesView.vue'
@@ -16,22 +17,26 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView
+      component: DashboardView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/expenses',
       name: 'expenses',
-      component: ExpensesView
+      component: ExpensesView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/budget',
       name: 'budget',
-      component: BudgetView
+      component: BudgetView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/settings',
       name: 'settings',
-      component: SettingsView
+      component: SettingsView,
+      meta: { requiresAuth: true }
     },
     // Catch all 404s
     {
@@ -40,6 +45,24 @@ const router = createRouter({
       component: () => import('../views/NotFoundView.vue')
     }
   ]
+})
+
+// Route guard to protect authenticated routes
+router.beforeEach(async (to, _from, next) => {
+  const { isAuthenticated, hasInitiallyChecked, checkAuthStatus } = useAuth()
+
+  // If we haven't checked auth yet, check it now
+  if (!hasInitiallyChecked.value) {
+    await checkAuthStatus()
+  }
+
+  // Check if route requires authentication
+  if (to.meta.requiresAuth && !isAuthenticated.value) {
+    // Redirect to home page if not authenticated
+    next({ name: 'home' })
+  } else {
+    next()
+  }
 })
 
 export default router

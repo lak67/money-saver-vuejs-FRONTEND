@@ -135,5 +135,5 @@
 </template>
 
 <script setup lang="ts">
-// Dashboard logic will go here
+// Future: Dashboard logic will go here
 </script>

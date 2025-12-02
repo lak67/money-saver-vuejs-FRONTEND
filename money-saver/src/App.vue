@@ -3,7 +3,7 @@ import Navigation from '@/components/layout/Navigation.vue';
 import { useTheme } from '@/composables/useTheme';
 
 // Initialize theme system
-const { } = useTheme()
+useTheme()
 </script>
 
 <template>

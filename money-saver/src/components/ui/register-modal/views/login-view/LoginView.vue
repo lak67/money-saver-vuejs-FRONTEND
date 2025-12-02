@@ -7,6 +7,18 @@
             </p>
         </div>
 
+        <!-- Error Message -->
+        <div v-if="props.errorMessage"
+            class="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm">
+            <div class="flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {{ props.errorMessage }}
+            </div>
+        </div>
+
         <div class="space-y-4">
             <div class="space-y-2">
                 <Label for="login-email">Email Address</Label>
@@ -38,6 +50,7 @@ interface Props {
     email: string
     password: string
     isLoading?: boolean
+    errorMessage?: string | null
 }
 
 interface Emits {

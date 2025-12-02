@@ -5,7 +5,7 @@
 
 // Environment variables with fallbacks
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api",
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1",
   TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || "5000"),
   DEV_MODE: import.meta.env.VITE_DEV_MODE === "true",
   ENABLE_LOGGING: import.meta.env.VITE_ENABLE_LOGGING === "true",
@@ -17,8 +17,12 @@ export const API_ENDPOINTS = {
   USERS: "/users",
   EXPENSES: "/expenses",
   BUDGETS: "/budgets",
+  USER_BUDGETS: "/user/budgets",
+  TRANSACTIONS: "/transactions",
   REGISTER_USER: "/register",
   LOGIN_USER: "/login",
+  AUTH_STATUS: "/auth/status",
+  LOGOUT: "/logout",
 } as const;
 
 // Helper function to build full URL

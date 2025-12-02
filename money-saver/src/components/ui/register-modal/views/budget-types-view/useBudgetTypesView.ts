@@ -49,7 +49,7 @@ export function useBudgetTypesView(providedBudgetTypes?: BudgetType[]) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch budget types";
       error.value = errorMessage;
-      console.error("Error fetching budget types:", err);
+      // console.error("Error fetching budget types:", err);
 
       // Return fallback budget types if API fails
       const fallbackTypes: BudgetType[] = [

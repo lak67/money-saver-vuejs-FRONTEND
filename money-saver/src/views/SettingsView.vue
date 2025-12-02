@@ -40,8 +40,8 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
-                            <select class="w-full md:w-auto border border-gray-300 rounded-md px-3 py-2">
+                            <label class="block text-sm font-medium text-foreground mb-2">Currency</label>
+                            <select class="w-full md:w-auto border border-input bg-background text-foreground rounded-md px-3 py-2">
                                 <option>USD ($)</option>
                                 <option>EUR (€)</option>
                                 <option>GBP (£)</option>
@@ -50,7 +50,7 @@
                         </div>
                         <div class="pt-4">
                             <button
-                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">
                                 Save Profile
                             </button>
                         </div>
@@ -58,83 +58,83 @@
                 </div>
 
                 <!-- Budget Categories -->
-                <div class="bg-white rounded-lg shadow-sm">
-                    <div class="p-6 border-b">
-                        <h2 class="text-lg font-semibold">Budget Categories</h2>
-                        <p class="text-sm text-gray-600">Customize your budget categories</p>
+                <div class="bg-card border border-border rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-border">
+                        <h2 class="text-lg font-semibold text-card-foreground">Budget Categories</h2>
+                        <p class="text-sm text-muted-foreground">Customize your budget categories</p>
                     </div>
                     <div class="p-6">
                         <div class="space-y-3 mb-4">
-                            <div class="flex justify-between items-center p-3 border border-gray-200 rounded-lg">
+                            <div class="flex justify-between items-center p-3 border border-border rounded-lg">
                                 <div class="flex items-center">
                                     <span class="text-xl mr-3">🏠</span>
-                                    <span class="font-medium">Rent</span>
+                                    <span class="font-medium text-card-foreground">Rent</span>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
-                                    <button class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                                    <button class="text-primary hover:text-primary/80 text-sm">Edit</button>
+                                    <button class="text-red-600 dark:text-red-400 hover:opacity-80 text-sm">Delete</button>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-3 border border-gray-200 rounded-lg">
+                            <div class="flex justify-between items-center p-3 border border-border rounded-lg">
                                 <div class="flex items-center">
                                     <span class="text-xl mr-3">🍽️</span>
-                                    <span class="font-medium">Food</span>
+                                    <span class="font-medium text-card-foreground">Food</span>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
-                                    <button class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                                    <button class="text-primary hover:text-primary/80 text-sm">Edit</button>
+                                    <button class="text-red-600 dark:text-red-400 hover:opacity-80 text-sm">Delete</button>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-3 border border-gray-200 rounded-lg">
+                            <div class="flex justify-between items-center p-3 border border-border rounded-lg">
                                 <div class="flex items-center">
                                     <span class="text-xl mr-3">⚡</span>
-                                    <span class="font-medium">Utilities</span>
+                                    <span class="font-medium text-card-foreground">Utilities</span>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
-                                    <button class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                                    <button class="text-primary hover:text-primary/80 text-sm">Edit</button>
+                                    <button class="text-red-600 dark:text-red-400 hover:opacity-80 text-sm">Delete</button>
                                 </div>
                             </div>
                         </div>
                         <button
-                            class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                            class="bg-green-600 dark:bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-700 dark:hover:bg-green-800 transition-colors">
                             + Add New Category
                         </button>
                     </div>
                 </div>
 
                 <!-- Notifications -->
-                <div class="bg-white rounded-lg shadow-sm">
-                    <div class="p-6 border-b">
-                        <h2 class="text-lg font-semibold">Notifications</h2>
-                        <p class="text-sm text-gray-600">Choose what notifications you want to receive</p>
+                <div class="bg-card border border-border rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-border">
+                        <h2 class="text-lg font-semibold text-card-foreground">Notifications</h2>
+                        <p class="text-sm text-muted-foreground">Choose what notifications you want to receive</p>
                     </div>
                     <div class="p-6 space-y-4">
                         <div class="flex justify-between items-center">
                             <div>
-                                <p class="font-medium">Budget Limit Alerts</p>
-                                <p class="text-sm text-gray-600">Get notified when you're close to your budget limits
+                                <p class="font-medium text-card-foreground">Budget Limit Alerts</p>
+                                <p class="text-sm text-muted-foreground">Get notified when you're close to your budget limits
                                 </p>
                             </div>
-                            <input type="checkbox" checked class="h-4 w-4 text-blue-600 rounded">
+                            <input type="checkbox" checked class="h-4 w-4 text-primary rounded accent-primary">
                         </div>
                         <div class="flex justify-between items-center">
                             <div>
-                                <p class="font-medium">Monthly Reports</p>
-                                <p class="text-sm text-gray-600">Receive monthly spending summaries</p>
+                                <p class="font-medium text-card-foreground">Monthly Reports</p>
+                                <p class="text-sm text-muted-foreground">Receive monthly spending summaries</p>
                             </div>
-                            <input type="checkbox" checked class="h-4 w-4 text-blue-600 rounded">
+                            <input type="checkbox" checked class="h-4 w-4 text-primary rounded accent-primary">
                         </div>
                         <div class="flex justify-between items-center">
                             <div>
-                                <p class="font-medium">Large Expense Alerts</p>
-                                <p class="text-sm text-gray-600">Get notified for expenses over $100</p>
+                                <p class="font-medium text-card-foreground">Large Expense Alerts</p>
+                                <p class="text-sm text-muted-foreground">Get notified for expenses over $100</p>
                             </div>
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 rounded">
+                            <input type="checkbox" class="h-4 w-4 text-primary rounded accent-primary">
                         </div>
                         <div class="pt-4">
                             <button
-                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">
                                 Save Preferences
                             </button>
                         </div>
@@ -142,47 +142,47 @@
                 </div>
 
                 <!-- Security -->
-                <div class="bg-white rounded-lg shadow-sm">
-                    <div class="p-6 border-b">
-                        <h2 class="text-lg font-semibold">Security</h2>
-                        <p class="text-sm text-gray-600">Manage your account security</p>
+                <div class="bg-card border border-border rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-border">
+                        <h2 class="text-lg font-semibold text-card-foreground">Security</h2>
+                        <p class="text-sm text-muted-foreground">Manage your account security</p>
                     </div>
                     <div class="p-6 space-y-4">
                         <div>
                             <button
-                                class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 transition-colors">
+                                class="bg-yellow-600 dark:bg-yellow-700 text-white px-4 py-2 rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-800 transition-colors">
                                 Change Password
                             </button>
                         </div>
                         <div>
                             <button
-                                class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors">
+                                class="bg-red-600 dark:bg-red-700 text-white px-4 py-2 rounded-md hover:bg-red-700 dark:hover:bg-red-800 transition-colors">
                                 Delete Account
                             </button>
-                            <p class="text-sm text-gray-600 mt-2">This action cannot be undone. All your data will be
+                            <p class="text-sm text-muted-foreground mt-2">This action cannot be undone. All your data will be
                                 permanently deleted.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Export Data -->
-                <div class="bg-white rounded-lg shadow-sm">
-                    <div class="p-6 border-b">
-                        <h2 class="text-lg font-semibold">Data Export</h2>
-                        <p class="text-sm text-gray-600">Download your financial data</p>
+                <div class="bg-card border border-border rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-border">
+                        <h2 class="text-lg font-semibold text-card-foreground">Data Export</h2>
+                        <p class="text-sm text-muted-foreground">Download your financial data</p>
                     </div>
                     <div class="p-6 space-y-4">
                         <div class="flex flex-wrap gap-4">
                             <button
-                                class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                                class="bg-green-600 dark:bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-700 dark:hover:bg-green-800 transition-colors">
                                 Export as CSV
                             </button>
                             <button
-                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">
                                 Export as PDF
                             </button>
                             <button
-                                class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors">
+                                class="bg-purple-600 dark:bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-700 dark:hover:bg-purple-800 transition-colors">
                                 Export as JSON
                             </button>
                         </div>
@@ -195,5 +195,6 @@
 
 <script setup lang="ts">
 import { ThemeSelector } from '@/components/ui/theme-toggle';
-// Settings logic will go here
+
+// Future: Settings logic will go here
 </script>

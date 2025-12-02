@@ -102,25 +102,25 @@
                         </div>
                     </div>
 
-                    <div class="p-6 flex justify-between items-center hover:bg-gray-50">
+                    <div class="p-6 flex justify-between items-center hover:bg-accent transition-colors">
                         <div class="flex items-center">
                             <span class="text-2xl mr-4">🛡️</span>
                             <div>
-                                <h3 class="font-medium">Health Insurance</h3>
-                                <p class="text-sm text-gray-600">October 1, 2025 • Insurance</p>
-                                <p class="text-sm text-gray-500">Monthly premium</p>
+                                <h3 class="font-medium text-card-foreground">Health Insurance</h3>
+                                <p class="text-sm text-muted-foreground">October 1, 2025 • Insurance</p>
+                                <p class="text-sm text-muted-foreground">Monthly premium</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="font-semibold text-lg text-red-600">-$320.00</p>
-                            <button class="text-sm text-blue-600 hover:text-blue-800">Edit</button>
+                            <p class="font-semibold text-lg text-red-600 dark:text-red-400">-$320.00</p>
+                            <button class="text-sm text-primary hover:text-primary/80">Edit</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Load More -->
-                <div class="p-6 text-center border-t">
-                    <button class="text-blue-600 hover:text-blue-800 font-medium">Load More Expenses</button>
+                <div class="p-6 text-center border-t border-border">
+                    <button class="text-primary hover:text-primary/80 font-medium">Load More Expenses</button>
                 </div>
             </div>
         </div>
@@ -128,5 +128,5 @@
 </template>
 
 <script setup lang="ts">
-// Expenses logic will go here
+// Future: Expenses logic will go here
 </script>

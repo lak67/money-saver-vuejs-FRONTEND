@@ -194,5 +194,5 @@
 </template>
 
 <script setup lang="ts">
-// Budget logic will go here
+// Future: Budget logic will go here
 </script>

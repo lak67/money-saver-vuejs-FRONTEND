@@ -11,7 +11,3 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-// 404 page logic
-</script>

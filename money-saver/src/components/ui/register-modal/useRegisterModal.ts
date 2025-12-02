@@ -1,5 +1,5 @@
 import { API_ENDPOINTS, apiRequest } from "@/lib/api";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { UserServices } from "../../../services/user/UserServices";
 
 export type ModalMode = "login" | "register";
@@ -15,7 +15,7 @@ export type ModalStep =
 
 export interface BudgetType {
   id: string;
-  name: string;
+  type_name: string;
   icon: string;
   description: string;
 }
@@ -40,36 +40,37 @@ export function useRegisterModal() {
   const isLoading = ref(false);
   const currentMode = ref<ModalMode>("login");
   const currentStep = ref<ModalStep>("login");
+  const loginError = ref<string | null>(null);
   
   // Budget types state - initialize with fallback data
   const defaultBudgetTypes: BudgetType[] = [
     {
       id: "rent",
-      name: "Rent",
+      type_name: "Rent",
       icon: "🏠",
       description: "Monthly rent or mortgage payment",
     },
     {
       id: "food",
-      name: "Food",
+      type_name: "Food",
       icon: "🍽️",
       description: "Groceries and dining expenses",
     },
     {
       id: "utilities",
-      name: "Utilities",
+      type_name: "Utilities",
       icon: "⚡",
       description: "Electric, water, gas, internet",
     },
     {
       id: "car-payment",
-      name: "Car Payment",
+      type_name: "Car Payment",
       icon: "🚗",
       description: "Monthly vehicle loan or lease",
     },
     {
       id: "insurance",
-      name: "Insurance",
+      type_name: "Insurance",
       icon: "🛡️",
       description: "Health, auto, life insurance",
     },
@@ -159,15 +160,12 @@ export function useRegisterModal() {
   // Fetch budget types from API
   const fetchBudgetTypes = async (): Promise<BudgetType[]> => {
     try {
-      console.log('Fetching budget types from API...');
       budgetTypesLoading.value = true;
       budgetTypesError.value = null;
 
       const response = await apiRequest(API_ENDPOINTS.BUDGET_TYPES, {
         method: "POST",
       });
-
-      console.log('API response status:', response.status);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -183,17 +181,14 @@ export function useRegisterModal() {
         icon: item.icon || item.Icon || "💰",
       }));
 
-      console.log('Fetched budget types from API:', fetchedBudgetTypes);
       budgetTypes.value = fetchedBudgetTypes;
-      console.log('Budget types reactive value set to:', budgetTypes.value);
       return fetchedBudgetTypes;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch budget types";
       budgetTypesError.value = errorMessage;
-      console.error("Error fetching budget types:", err);
+      // console.error("Error fetching budget types:", err);
       
       // Keep the default budget types that were already initialized
-      console.log("Using default budget types due to API error");
       return budgetTypes.value;
     } finally {
       budgetTypesLoading.value = false;
@@ -201,9 +196,13 @@ export function useRegisterModal() {
   };
 
   // Available budget types (initialized with defaults, updated from API)
-  const availableBudgetTypes = computed(() => {
-    console.log('Available budget types computed:', budgetTypes.value);
-    return budgetTypes.value;
+  const availableBudgetTypes = computed(() => budgetTypes.value);
+
+  // Clear login error when user starts typing
+  watch([email, password], () => {
+    if (loginError.value) {
+      loginError.value = null;
+    }
   });
 
   // Methods
@@ -213,7 +212,6 @@ export function useRegisterModal() {
     currentStep.value = "login";
     // Ensure budget types are fetched when modal opens
     if (budgetTypes.value.length === 0) {
-      console.log('Fetching budget types on modal open...');
       fetchBudgetTypes();
     }
   };
@@ -224,6 +222,7 @@ export function useRegisterModal() {
     // Clear form fields when switching modes
     email.value = "";
     password.value = "";
+    loginError.value = null;
   };
 
   const switchToRegister = () => {
@@ -285,25 +284,27 @@ export function useRegisterModal() {
     if (!isLoginFormValid.value) return;
     
     isLoading.value = true;
+    loginError.value = null;
+    
     try {
       const loginPayload = {
         email: email.value,
         password: password.value
       };
-
-      console.log('Login payload:', loginPayload);
       
       // Call UserServices login method  
-      const result = await UserServices().loginUser(loginPayload);
-      console.log('Login successful:', result);
+      await UserServices().loginUser(loginPayload);
       
-      // Handle successful login (you might want to emit an event or navigate)
-      // For now, we'll just close the modal
+      // Update auth context after successful login
+      const { refreshAuth } = await import('@/composables/useAuth').then(m => m.useAuth());
+      await refreshAuth();
+      
+      // Handle successful login
       closeModal();
       
     } catch (error) {
-      console.error('Login failed:', error);
-      // Handle login error (you might want to show an error message)
+      // console.error('Login failed:', error);
+      loginError.value = "Incorrect email or password. Please try again.";
     } finally {
       isLoading.value = false;
     }
@@ -344,15 +345,17 @@ export function useRegisterModal() {
       })),
     };
 
-    console.log('Registration payload being sent:', registerUserPayload);
-    console.log('Budget types with converted IDs:', registerUserPayload.budget_types);
-
     try {
       await UserServices().registerUser(registerUserPayload);
-      isLoading.value = true;
+      
+      // Update auth context after successful registration
+      const { refreshAuth } = await import('@/composables/useAuth').then(m => m.useAuth());
+      await refreshAuth();
+      
+      isLoading.value = false;
       nextStep(); // Go to success step
     } catch (error) {
-      console.error("Error registering user:", error);
+      // console.error("Error registering user:", error);
     } finally {
       isLoading.value = false;
 
@@ -362,15 +365,10 @@ export function useRegisterModal() {
 
       resetFields();
     }
-
-    //login user
   };
 
   // Budget management methods
   const toggleBudgetType = (budgetTypeId: string) => {
-    console.log(`Toggling budget type: ${budgetTypeId}`);
-    console.log('Available budget types:', budgetTypes.value.map(bt => ({ id: bt.id, name: bt.name })));
-    
     const index = selectedBudgetTypes.value.findIndex(
       (b) => b.id === budgetTypeId
     );
@@ -379,8 +377,6 @@ export function useRegisterModal() {
     } else {
       selectedBudgetTypes.value.push({ id: budgetTypeId, total_amount: 0 });
     }
-    
-    console.log('Selected budget types after toggle:', selectedBudgetTypes.value);
   };
 
   const updateBudgetAmount = (budgetTypeId: string, amount: number) => {
@@ -426,6 +422,7 @@ export function useRegisterModal() {
     isLoading,
     currentMode,
     currentStep,
+    loginError,
 
     // Computed
     passwordValidation,

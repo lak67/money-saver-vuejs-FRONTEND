@@ -52,16 +52,12 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-console.log('BudgetAmountsView - Available budget types:', props.availableBudgetTypes)
-console.log('BudgetAmountsView - Selected budget types:', props.selectedBudgetTypes)
-
 // Create a computed map of budget types for efficient lookups
 const budgetTypeMap = computed(() => {
     const map = new Map<string, BudgetType>()
     props.availableBudgetTypes.forEach(bt => {
         map.set(bt.id, bt)
     })
-    console.log('Budget type map created:', map)
     return map
 })
 

@@ -29,6 +29,7 @@ const {
     isBudgetAmountsFormValid,
     availableBudgetTypes,
     finalFields,
+    loginError,
     switchToLogin,
     switchToRegister,
     submitLogin,
@@ -58,8 +59,8 @@ const {
             </DialogHeader>
 
             <!-- Login Step -->
-            <LoginView v-if="currentStep === 'login'" :email="email" :password="password" @update:email="email = $event"
-                @update:password="password = $event" />
+            <LoginView v-if="currentStep === 'login'" :email="email" :password="password" :error-message="loginError"
+                @update:email="email = $event" @update:password="password = $event" />
 
             <!-- Register Step -->
             <RegisterView v-if="currentStep === 'register'" :email="email" :password="password"
