@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { UserBudget } from '@/services/budget/BudgetServices';
-import { computed, ref } from 'vue';
+import { useAddTransactionForm } from './useAddTransactionForm';
 
 interface Props {
     budgets: UserBudget[];
@@ -17,30 +17,16 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const selectedBudgetTypeId = ref<string>('');
-const amount = ref<string>('');
+const {
+    selectedBudgetTypeId,
+    amount,
+    isFormValid,
+    selectedBudget,
+    handleSubmit,
+} = useAddTransactionForm(props.budgets);
 
-const isFormValid = computed(() => {
-    return selectedBudgetTypeId.value !== '' &&
-        amount.value !== '' &&
-        parseFloat(amount.value) > 0;
-});
-
-const selectedBudget = computed(() => {
-    return props.budgets.find(b => b.budget_type_id === selectedBudgetTypeId.value);
-});
-
-const handleSubmit = () => {
-    if (!isFormValid.value) return;
-
-    emit('submit', {
-        budgetTypeId: selectedBudgetTypeId.value,
-        amount: parseFloat(amount.value),
-    });
-
-    // Reset form
-    selectedBudgetTypeId.value = '';
-    amount.value = '';
+const onSubmit = () => {
+    handleSubmit((payload) => emit('submit', payload));
 };
 </script>
 
@@ -48,7 +34,7 @@ const handleSubmit = () => {
     <div class="bg-card border border-border rounded-lg p-6 shadow-sm">
         <h2 class="text-lg font-semibold text-foreground mb-4">Add Transaction</h2>
 
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <form @submit.prevent="onSubmit" class="space-y-4">
             <!-- Budget Type Dropdown -->
             <div class="space-y-2">
                 <Label for="budget-type">Select Budget Type</Label>
@@ -60,6 +46,18 @@ const handleSubmit = () => {
                     </option>
                     <option v-for="budget in budgets" :key="budget.budget_type_id" :value="budget.budget_type_id">
                         {{ budget.budget_type_icon }} {{ budget.budget_type_name }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Budget Type Label (locked until budget type selected) -->
+            <div class="space-y-2">
+                <Label for="budget-type-label">Budget Type Label</Label>
+                <select id="budget-type-label"
+                    class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+                    :disabled="!selectedBudgetTypeId || isLoading">
+                    <option value="" disabled selected>
+                        {{ selectedBudgetTypeId ? 'Select budget type label' : 'Select budget type first' }}
                     </option>
                 </select>
                 <p v-if="selectedBudget" class="text-xs text-muted-foreground">

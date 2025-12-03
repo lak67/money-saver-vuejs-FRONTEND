@@ -14,11 +14,13 @@ export const API_CONFIG = {
 // API endpoints
 export const API_ENDPOINTS = {
   BUDGET_TYPES: "/budgettypes",
+  USER_BUDGET_TYPE_LABELS: "/budgettype/user/labels",
   USERS: "/users",
   EXPENSES: "/expenses",
   BUDGETS: "/budgets",
   USER_BUDGETS: "/user/budgets",
   TRANSACTIONS: "/transactions",
+  CREATE_TRANSACTION: "/transactions/create",
   REGISTER_USER: "/register",
   LOGIN_USER: "/login",
   AUTH_STATUS: "/auth/status",
