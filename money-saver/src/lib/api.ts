@@ -14,7 +14,7 @@ export const API_CONFIG = {
 // API endpoints
 export const API_ENDPOINTS = {
   BUDGET_TYPES: "/budgettypes",
-  USER_BUDGET_TYPE_LABELS: "/budgettype/user/labels",
+  USER_BUDGET_TYPE_LABELS: "/budgettypes/labels",
   USERS: "/users",
   EXPENSES: "/expenses",
   BUDGETS: "/budgets",

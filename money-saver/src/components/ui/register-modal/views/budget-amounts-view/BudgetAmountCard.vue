@@ -4,7 +4,7 @@
             <div class="flex items-center gap-3">
                 <div class="text-2xl">{{ budgetType.icon }}</div>
                 <div>
-                    <h5 class="font-medium text-sm">{{ budgetType.name }}</h5>
+                    <h5 class="font-medium text-sm">{{ budgetType.type_name }}</h5>
                     <p class="text-xs text-muted-foreground">{{ budgetType.description }}</p>
                 </div>
             </div>

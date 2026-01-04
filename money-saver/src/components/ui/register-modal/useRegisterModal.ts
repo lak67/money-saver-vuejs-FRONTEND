@@ -176,7 +176,7 @@ export function useRegisterModal() {
       // Map API response to BudgetType interface
       const fetchedBudgetTypes = data.map((item: any) => ({
         id: String(item.id || item.ID),
-        name: item.name || item.Name,
+        type_name: item.type_name || item.TypeName,
         description: item.description || item.Description,
         icon: item.icon || item.Icon || "💰",
       }));

@@ -97,7 +97,7 @@ const handleDeleteTransaction = async (transactionId: string) => {
 onMounted(() => {
     if (isAuthenticated.value) {
         fetchBudgets();
-        fetchTransactions();
+        // fetchTransactions();
     }
 });
 </script>

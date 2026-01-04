@@ -19,7 +19,7 @@ export const BudgetServices = () => {
   const fetchUserBudgets = async (): Promise<UserBudget[]> => {
     try {
       const response = await apiRequest(API_ENDPOINTS.USER_BUDGET_TYPE_LABELS, {
-        method: "GET",
+        method: "POST",
       });
 
       if (!response.ok) {

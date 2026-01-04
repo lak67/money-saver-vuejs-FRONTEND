@@ -11,7 +11,7 @@
             <div v-for="budgetType in selectedBudgetTypes" :key="budgetType.id" class="space-y-2">
                 <div class="flex items-center gap-2">
                     <span>{{ getBudgetType(budgetType.id)?.icon }}</span>
-                    <Label :for="String(budgetType.id)">{{ getBudgetType(budgetType.id)?.name }}</Label>
+                    <Label :for="String(budgetType.id)">{{ getBudgetType(budgetType.id)?.type_name }}</Label>
                 </div>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>

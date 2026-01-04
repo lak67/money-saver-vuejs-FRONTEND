@@ -12,17 +12,17 @@
 
         <!-- Quick Summary -->
         <div class="bg-green-50 p-4 rounded-lg w-full">
-            <div class="space-y-2 text-sm">
-                <div class="flex justify-between">
-                    <span class="text-green-700">Account:</span>
+            <div class="space-y-2 text-sm text-green-700">
+                <div class="flex justify-between ">
+                    <span class="">Account:</span>
                     <span class="font-medium">{{ finalFields.email }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-green-700">Yearly Income:</span>
+                    <span class="">Yearly Income:</span>
                     <span class="font-medium">${{ finalFields.yearlyIncome?.toLocaleString() || '0' }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-green-700">Budget Categories:</span>
+                    <span class="">Budget Categories:</span>
                     <span class="font-medium">Ready to use!</span>
                 </div>
             </div>

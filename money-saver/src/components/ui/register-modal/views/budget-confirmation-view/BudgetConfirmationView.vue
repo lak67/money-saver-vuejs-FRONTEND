@@ -27,7 +27,7 @@
                         class="flex justify-between items-center text-sm">
                         <div class="flex items-center gap-2">
                             <span>{{ getBudgetType(budgetType.id)?.icon }}</span>
-                            <span>{{ getBudgetType(budgetType.id)?.name }}</span>
+                            <span>{{ getBudgetType(budgetType.id)?.type_name }}</span>
                         </div>
                         <span class="font-medium">${{ budgetType.total_amount }}</span>
                     </div>

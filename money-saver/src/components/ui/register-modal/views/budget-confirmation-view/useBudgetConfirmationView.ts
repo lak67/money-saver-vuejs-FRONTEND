@@ -44,7 +44,7 @@ export function useBudgetConfirmationView() {
         const budgetType = getBudgetTypeById.value(budget.budgetTypeId, availableTypes)
         return {
           id: budget.budgetTypeId,
-          name: budgetType?.name || 'Unknown',
+          type_name: budgetType?.type_name || 'Unknown',
           icon: budgetType?.icon || '📊',
           total_amount: parseInt(String(budget.total_amount)) || 0,
           formattedAmount: formatCurrency.value(budget.total_amount)
@@ -69,7 +69,7 @@ export function useBudgetConfirmationView() {
     text += `Budget Breakdown:\n`
     
     summary.budgets.forEach(budget => {
-      text += `${budget.icon} ${budget.name}: ${budget.formattedAmount}\n`
+      text += `${budget.icon} ${budget.type_name}: ${budget.formattedAmount}\n`
     })
     
     text += `\nCreated: ${new Date().toLocaleDateString()}`

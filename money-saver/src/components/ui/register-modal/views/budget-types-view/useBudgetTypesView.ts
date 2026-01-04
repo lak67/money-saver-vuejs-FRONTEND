@@ -35,11 +35,13 @@ export function useBudgetTypesView(providedBudgetTypes?: BudgetType[]) {
 
       const data = await response.json();
 
+      console.log(data, "here")
+
       // Assuming your API returns an array of budget types
       // Adjust the data structure mapping as needed based on your API response
       budgetTypes.value = data.map((item: any) => ({
         id: item.id || item.ID,
-        name: item.name || item.Name,
+        type_name: item.type_name || item.TypeName,
         description: item.description || item.Description,
         icon: item.icon || item.Icon || "💰",
       }));
@@ -55,31 +57,31 @@ export function useBudgetTypesView(providedBudgetTypes?: BudgetType[]) {
       const fallbackTypes: BudgetType[] = [
         {
           id: "rent",
-          name: "Rent",
+          type_name: "Rent",
           description: "Monthly housing rent",
           icon: "🏠",
         },
         {
           id: "utilities",
-          name: "Utilities",
+          type_name: "Utilities",
           description: "Electric, water, gas, internet",
           icon: "⚡",
         },
         {
           id: "groceries",
-          name: "Groceries",
+          type_name: "Groceries",
           description: "Food and household items",
           icon: "🛒",
         },
         {
           id: "savings",
-          name: "Savings",
+          type_name: "Savings",
           description: "Emergency fund and investments",
           icon: "💰",
         },
         {
           id: "transportation",
-          name: "Transportation",
+          type_name: "Transportation",
           description: "Car payments, gas, public transit",
           icon: "🚗",
         },
@@ -107,7 +109,7 @@ export function useBudgetTypesView(providedBudgetTypes?: BudgetType[]) {
       const search = searchTerm.value.toLowerCase();
       filtered = filtered.filter(
         (type) =>
-          type.name.toLowerCase().includes(search) ||
+          type.type_name.toLowerCase().includes(search) ||
           type.description.toLowerCase().includes(search)
       );
     }
@@ -137,7 +139,7 @@ export function useBudgetTypesView(providedBudgetTypes?: BudgetType[]) {
     }
 
     if (selectedTypes.length === 1) {
-      return `1 category selected: ${selectedTypes[0]?.name || "Unknown"}`;
+      return `1 category selected: ${selectedTypes[0]?.type_name || "Unknown"}`;
     }
 
     return `${selectedTypes.length} categories selected`;
