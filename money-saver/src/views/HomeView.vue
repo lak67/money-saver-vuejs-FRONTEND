@@ -10,7 +10,7 @@ import { onMounted, ref } from 'vue';
 const { isAuthenticated } = useAuth();
 
 // State
-const budgets = ref<UserBudget[]>([]);
+const budgets = ref<UserBudget | null>(null);
 const transactions = ref<Transaction[]>([]);
 const isLoadingBudgets = ref(false);
 const isLoadingTransactions = ref(false);
@@ -25,6 +25,7 @@ const fetchBudgets = async () => {
     isLoadingBudgets.value = true;
     try {
         budgets.value = await budgetService.fetchUserBudgets();
+        console.log("Fetched budgets:", budgets.value);
     } catch (error) {
         console.error('Failed to fetch budgets:', error);
     } finally {
@@ -52,11 +53,11 @@ const fetchTransactions = async () => {
 };
 
 // Handle transaction submission
-const handleAddTransaction = async (payload: { budgetTypeId: string; amount: number }) => {
+const handleAddTransaction = async (payload: { budgetTypeId: number; budgetTypeLabelId: number; amount: number }) => {
     isSubmittingTransaction.value = true;
     try {
         const transactionPayload: CreateTransactionPayload = {
-            budget_type_id: payload.budgetTypeId,
+            budget_type_id: payload.budgetTypeId.toString(),
             amount: payload.amount,
         };
 
@@ -114,12 +115,14 @@ onMounted(() => {
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
 
-                <div v-else-if="budgets.length === 0" class="text-center py-12 bg-card border border-border rounded-lg">
+                <div v-else-if="!budgets || !budgets.labels || !budgets.labels.users_budget_type_labels || budgets.labels.users_budget_type_labels.length === 0"
+                    class="text-center py-12 bg-card border border-border rounded-lg">
                     <p class="text-muted-foreground">No budgets configured yet.</p>
                 </div>
 
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <BudgetCard v-for="budget in budgets" :key="budget.id" :budget="budget" />
+                    <BudgetCard v-for="userBudget in budgets.labels.users_budget_type_labels" :key="userBudget.id"
+                        :user-budget="userBudget" />
                 </div>
             </section>
 
