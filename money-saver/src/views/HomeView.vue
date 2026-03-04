@@ -5,7 +5,7 @@ import TransactionList from '@/components/transactions/TransactionList.vue';
 import { useAuth } from '@/composables/useAuth';
 import { BudgetServices, type UserBudget } from '@/services/budget/BudgetServices';
 import { TransactionServices, type CreateTransactionPayload, type Transaction } from '@/services/transactions/TransactionServices';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const { isAuthenticated } = useAuth();
 
@@ -95,10 +95,22 @@ const handleDeleteTransaction = async (transactionId: string) => {
 };
 
 // Initialize data when user is authenticated
+const initDashboard = () => {
+    fetchBudgets();
+    fetchTransactions();
+};
+
+// Run immediately if already authenticated on mount,
+// and also watch for auth state change (e.g. after login via modal)
 onMounted(() => {
     if (isAuthenticated.value) {
-        fetchBudgets();
-        // fetchTransactions();
+        initDashboard();
+    }
+});
+
+watch(isAuthenticated, (authenticated) => {
+    if (authenticated) {
+        initDashboard();
     }
 });
 </script>

@@ -1,5 +1,9 @@
-import type { BudgetTypeLabel, BudgetTypeWithLabels, UserBudget } from '@/services/budget/BudgetServices';
-import { computed, ref, watch } from 'vue';
+import type {
+  BudgetTypeLabel,
+  BudgetTypeWithLabels,
+  UserBudget,
+} from "@/services/budget/BudgetServices";
+import { computed, ref, watch } from "vue";
 
 export interface AddTransactionPayload {
   budgetTypeId: number;
@@ -10,7 +14,7 @@ export interface AddTransactionPayload {
 export const useAddTransactionForm = (budgetData: UserBudget | null) => {
   const selectedBudgetTypeId = ref<number | null>(null);
   const selectedBudgetTypeLabelId = ref<number | null>(null);
-  const amount = ref<string>('');
+  const amount = ref<string>("");
 
   // Reset budget type label when budget type changes
   watch(selectedBudgetTypeId, () => {
@@ -21,7 +25,7 @@ export const useAddTransactionForm = (budgetData: UserBudget | null) => {
     return (
       selectedBudgetTypeId.value !== null &&
       selectedBudgetTypeLabelId.value !== null &&
-      amount.value !== '' &&
+      amount.value !== "" &&
       parseFloat(amount.value) > 0
     );
   });
@@ -32,37 +36,45 @@ export const useAddTransactionForm = (budgetData: UserBudget | null) => {
       return [];
     }
     return budgetData.labels.users_budget_type_labels.map(
-      (userBudget) => userBudget.budget_type_with_labels
+      (userBudget) => userBudget.budget_type_with_labels,
     );
   });
 
   // Get available budget type labels filtered by selected budget type
   const availableBudgetTypeLabels = computed<BudgetTypeLabel[]>(() => {
-    console.log("Computing availableBudgetTypeLabels with selectedBudgetTypeId:", selectedBudgetTypeId.value);
-    console.log("Budget data:", budgetData);
-    if (!budgetData?.labels?.users_budget_type_labels || !selectedBudgetTypeId.value) {
+    if (
+      !budgetData?.labels?.users_budget_type_labels ||
+      !selectedBudgetTypeId.value
+    ) {
       return [];
     }
-    
+
     const selectedUserBudget = budgetData.labels.users_budget_type_labels.find(
-      (userBudget) => userBudget.budget_type_with_labels.id === selectedBudgetTypeId.value
+      (userBudget) =>
+        userBudget.budget_type_with_labels.id === selectedBudgetTypeId.value,
     );
-    
+
     return selectedUserBudget?.budget_type_with_labels.budget_type_labels || [];
   });
 
   const selectedBudget = computed(() => {
     if (!budgetData?.labels?.users_budget_type_labels) return null;
-    
+
     const selectedUserBudget = budgetData.labels.users_budget_type_labels.find(
-      (userBudget) => userBudget.budget_type_with_labels.id === selectedBudgetTypeId.value
+      (userBudget) =>
+        userBudget.budget_type_with_labels.id === selectedBudgetTypeId.value,
     );
-    
+
     return selectedUserBudget?.budget_type_with_labels || null;
   });
 
   const handleSubmit = (callback: (payload: AddTransactionPayload) => void) => {
-    if (!isFormValid.value || selectedBudgetTypeId.value === null || selectedBudgetTypeLabelId.value === null) return;
+    if (
+      !isFormValid.value ||
+      selectedBudgetTypeId.value === null ||
+      selectedBudgetTypeLabelId.value === null
+    )
+      return;
 
     callback({
       budgetTypeId: selectedBudgetTypeId.value,
@@ -77,7 +89,7 @@ export const useAddTransactionForm = (budgetData: UserBudget | null) => {
   const resetForm = () => {
     selectedBudgetTypeId.value = null;
     selectedBudgetTypeLabelId.value = null;
-    amount.value = '';
+    amount.value = "";
   };
 
   return {

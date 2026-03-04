@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
   CREATE_TRANSACTION: "/transactions/create",
   REGISTER_USER: "/register",
   LOGIN_USER: "/login",
+  CHECK_EMAIL: "/email/exists",
   AUTH_STATUS: "/auth/status",
   LOGOUT: "/logout",
 } as const;
@@ -44,7 +45,7 @@ export const getDefaultHeaders = (): Record<string, string> => {
 // Helper function for fetch with default config
 export const apiRequest = async (
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<Response> => {
   const url = buildApiUrl(endpoint);
   const defaultOptions: RequestInit = {

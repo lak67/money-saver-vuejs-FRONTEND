@@ -9,7 +9,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog"
 import { useRegisterModal } from "./useRegisterModal"
-import { BudgetAmountsView, BudgetConfirmationView, BudgetTypesView, IncomeView, LoginView, RegisterView, SuccessView } from "./views"
+import { BudgetAmountsView, BudgetConfirmationView, BudgetTypesView, IncomeView, LoginView, RegisterErrorView, RegisterView, SuccessView } from "./views"
 
 // Use the composable
 const {
@@ -23,6 +23,7 @@ const {
     currentStepTitle,
     passwordValidation,
     isRegisterFormValid,
+    isEmailFormatValid,
     isLoginFormValid,
     isIncomeFormValid,
     isBudgetTypesFormValid,
@@ -30,6 +31,12 @@ const {
     availableBudgetTypes,
     finalFields,
     loginError,
+    registrationError,
+    emailCheckState,
+    emailCheckError,
+    shakePasswordHint,
+    loginEmailCheckState,
+    loginEmailCheckError,
     switchToLogin,
     switchToRegister,
     submitLogin,
@@ -38,6 +45,8 @@ const {
     submitBudgetTypes,
     submitBudgetAmounts,
     registerUser,
+    retryRegistration,
+    startOver,
     toggleBudgetType,
     updateBudgetAmount,
     previousStep,
@@ -60,12 +69,14 @@ const {
 
             <!-- Login Step -->
             <LoginView v-if="currentStep === 'login'" :email="email" :password="password" :error-message="loginError"
+                :login-email-check-state="loginEmailCheckState" :login-email-check-error="loginEmailCheckError"
                 @update:email="email = $event" @update:password="password = $event" />
 
             <!-- Register Step -->
             <RegisterView v-if="currentStep === 'register'" :email="email" :password="password"
-                :password-validation="passwordValidation" @update:email="email = $event"
-                @update:password="password = $event" />
+                :password-validation="passwordValidation" :email-check-state="emailCheckState"
+                :email-check-error="emailCheckError" :shake-password-hint="shakePasswordHint"
+                @update:email="email = $event" @update:password="password = $event" />
 
             <!-- Income Step -->
             <IncomeView v-if="currentStep === 'income'" :yearly-income="yearlyIncome"
@@ -86,6 +97,9 @@ const {
             <!-- Success Step -->
             <SuccessView v-if="currentStep === 'success'" :finalFields="finalFields" />
 
+            <!-- Registration Error Step -->
+            <RegisterErrorView v-if="currentStep === 'register-error'" :error-message="registrationError" />
+
             <DialogFooter class="gap-2">
                 <!-- Login Step Footer -->
                 <template v-if="currentStep === 'login'">
@@ -96,9 +110,12 @@ const {
                             <span
                                 class="absolute bottom-0 left-0 w-0 h-0.5 bg-foreground transition-all duration-300 ease-out group-hover:w-full"></span>
                         </button>
-                        <Button type="submit" @click="submitLogin" :disabled="!isLoginFormValid || isLoading">
-                            <span v-if="isLoading">Signing in...</span>
-                            <span v-else>Sign In</span>
+                        <Button type="submit" @click="submitLogin"
+                            :disabled="!isEmailFormatValid || loginEmailCheckState === 'loading' || isLoading">
+                            <span v-if="loginEmailCheckState === 'loading'">Checking…</span>
+                            <span v-else-if="loginEmailCheckState === 'valid' && isLoading">Signing in…</span>
+                            <span v-else-if="loginEmailCheckState === 'valid'">Sign In</span>
+                            <span v-else>Next →</span>
                         </Button>
                     </div>
                 </template>
@@ -116,8 +133,11 @@ const {
                             <Button type="button" variant="outline" @click="resetForm" :disabled="isLoading">
                                 Reset
                             </Button>
-                            <Button type="submit" @click="submitRegister" :disabled="!isRegisterFormValid || isLoading">
-                                Next →
+                            <Button type="submit" @click="submitRegister"
+                                :disabled="!isEmailFormatValid || emailCheckState === 'loading' || isLoading">
+                                <span v-if="emailCheckState === 'loading'">Checking…</span>
+                                <span v-else-if="emailCheckState === 'valid'">Next →</span>
+                                <span v-else>Next →</span>
                             </Button>
                         </div>
                     </div>
@@ -169,6 +189,18 @@ const {
                     <Button type="button" @click="closeModal">
                         Get Started
                     </Button>
+                </template>
+
+                <!-- Registration Error Step Footer -->
+                <template v-if="currentStep === 'register-error'">
+                    <div class="flex items-center justify-between w-full">
+                        <Button type="button" variant="outline" @click="startOver" :disabled="isLoading">
+                            Start Over
+                        </Button>
+                        <Button type="button" @click="retryRegistration" :disabled="isLoading">
+                            ← Try Again
+                        </Button>
+                    </div>
                 </template>
             </DialogFooter>
         </DialogContent>

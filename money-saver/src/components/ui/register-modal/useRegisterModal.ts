@@ -4,6 +4,8 @@ import { UserServices } from "../../../services/user/UserServices";
 
 export type ModalMode = "login" | "register";
 
+export type EmailCheckState = "idle" | "loading" | "valid" | "invalid";
+
 export type ModalStep =
   | "login"
   | "register"
@@ -11,7 +13,8 @@ export type ModalStep =
   | "budget-types"
   | "budget-amounts"
   | "confirmation"
-  | "success";
+  | "success"
+  | "register-error";
 
 export interface BudgetType {
   id: string;
@@ -41,7 +44,17 @@ export function useRegisterModal() {
   const currentMode = ref<ModalMode>("login");
   const currentStep = ref<ModalStep>("login");
   const loginError = ref<string | null>(null);
-  
+  const registrationError = ref<string | null>(null);
+
+  // Email check state for register flow
+  const emailCheckState = ref<EmailCheckState>("idle");
+  const emailCheckError = ref<string | null>(null);
+  const shakePasswordHint = ref(false);
+
+  // Email check state for login flow
+  const loginEmailCheckState = ref<EmailCheckState>("idle");
+  const loginEmailCheckError = ref<string | null>(null);
+
   // Budget types state - initialize with fallback data
   const defaultBudgetTypes: BudgetType[] = [
     {
@@ -75,7 +88,7 @@ export function useRegisterModal() {
       description: "Health, auto, life insurance",
     },
   ];
-  
+
   const budgetTypes = ref<BudgetType[]>(defaultBudgetTypes);
   const budgetTypesLoading = ref(false);
   const budgetTypesError = ref<string | null>(null);
@@ -122,6 +135,11 @@ export function useRegisterModal() {
     );
   });
 
+  // True when email field has a plausible format (used to gate the email-check call)
+  const isEmailFormatValid = computed(() => {
+    return email.value.trim().length > 0 && email.value.includes("@");
+  });
+
   const isIncomeFormValid = computed(() => {
     return yearlyIncome.value !== null && yearlyIncome.value > 0;
   });
@@ -132,7 +150,7 @@ export function useRegisterModal() {
 
   const isBudgetAmountsFormValid = computed(() => {
     return selectedBudgetTypes.value.every(
-      (budget) => budget.total_amount >= 0
+      (budget) => budget.total_amount >= 0,
     );
   });
 
@@ -152,6 +170,8 @@ export function useRegisterModal() {
         return "Confirm Your Information";
       case "success":
         return "Welcome to Money Saver!";
+      case "register-error":
+        return "Registration Failed";
       default:
         return "Sign In";
     }
@@ -184,10 +204,11 @@ export function useRegisterModal() {
       budgetTypes.value = fetchedBudgetTypes;
       return fetchedBudgetTypes;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch budget types";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch budget types";
       budgetTypesError.value = errorMessage;
       // console.error("Error fetching budget types:", err);
-      
+
       // Keep the default budget types that were already initialized
       return budgetTypes.value;
     } finally {
@@ -198,10 +219,71 @@ export function useRegisterModal() {
   // Available budget types (initialized with defaults, updated from API)
   const availableBudgetTypes = computed(() => budgetTypes.value);
 
+  // Register flow: valid when the email is NOT yet taken
+  const checkEmail = async () => {
+    if (!isEmailFormatValid.value) return;
+
+    emailCheckState.value = "loading";
+    emailCheckError.value = null;
+
+    try {
+      const exists = await UserServices().checkEmailExists(email.value);
+      if (exists) {
+        emailCheckState.value = "invalid";
+        emailCheckError.value = "This email is already registered.";
+      } else {
+        emailCheckState.value = "valid";
+      }
+    } catch (err) {
+      emailCheckState.value = "invalid";
+      emailCheckError.value =
+        err instanceof Error
+          ? err.message
+          : "Unable to verify email. Please try again.";
+    }
+  };
+
+  // Login flow: valid when the email IS found in the system
+  const checkUserExists = async () => {
+    if (!isEmailFormatValid.value) return;
+
+    loginEmailCheckState.value = "loading";
+    loginEmailCheckError.value = null;
+
+    try {
+      const exists = await UserServices().checkEmailExists(email.value);
+      if (exists) {
+        loginEmailCheckState.value = "valid";
+      } else {
+        loginEmailCheckState.value = "invalid";
+        loginEmailCheckError.value =
+          "No account found with this email address.";
+      }
+    } catch (err) {
+      loginEmailCheckState.value = "invalid";
+      loginEmailCheckError.value =
+        err instanceof Error
+          ? err.message
+          : "Unable to verify email. Please try again.";
+    }
+  };
+
   // Clear login error when user starts typing
   watch([email, password], () => {
     if (loginError.value) {
       loginError.value = null;
+    }
+  });
+
+  // Reset email check state when the email field changes
+  watch(email, () => {
+    if (emailCheckState.value !== "idle") {
+      emailCheckState.value = "idle";
+      emailCheckError.value = null;
+    }
+    if (loginEmailCheckState.value !== "idle") {
+      loginEmailCheckState.value = "idle";
+      loginEmailCheckError.value = null;
     }
   });
 
@@ -223,6 +305,8 @@ export function useRegisterModal() {
     email.value = "";
     password.value = "";
     loginError.value = null;
+    loginEmailCheckState.value = "idle";
+    loginEmailCheckError.value = null;
   };
 
   const switchToRegister = () => {
@@ -239,6 +323,12 @@ export function useRegisterModal() {
     yearlyIncome.value = null;
     selectedBudgetTypes.value = [];
     isLoading.value = false;
+    emailCheckState.value = "idle";
+    emailCheckError.value = null;
+    loginEmailCheckState.value = "idle";
+    loginEmailCheckError.value = null;
+    registrationError.value = null;
+    shakePasswordHint.value = false;
   };
 
   const closeModal = () => {
@@ -246,7 +336,7 @@ export function useRegisterModal() {
 
     resetFields();
 
-    currentStep.value = "register";
+    currentStep.value = "login";
   };
 
   const nextStep = () => {
@@ -281,27 +371,42 @@ export function useRegisterModal() {
   };
 
   const submitLogin = async () => {
-    if (!isLoginFormValid.value) return;
-    
+    if (!isEmailFormatValid.value) return;
+
+    // Phase 1: check that the account exists
+    if (
+      loginEmailCheckState.value === "idle" ||
+      loginEmailCheckState.value === "invalid"
+    ) {
+      await checkUserExists();
+      return;
+    }
+
+    if (loginEmailCheckState.value === "loading") return;
+
+    // Phase 2: account confirmed — attempt sign-in
+    if (!password.value.trim()) return;
+
     isLoading.value = true;
     loginError.value = null;
-    
+
     try {
       const loginPayload = {
         email: email.value,
-        password: password.value
+        password: password.value,
       };
-      
-      // Call UserServices login method  
+
+      // Call UserServices login method
       await UserServices().loginUser(loginPayload);
-      
+
       // Update auth context after successful login
-      const { refreshAuth } = await import('@/composables/useAuth').then(m => m.useAuth());
+      const { refreshAuth } = await import("@/composables/useAuth").then((m) =>
+        m.useAuth(),
+      );
       await refreshAuth();
-      
+
       // Handle successful login
       closeModal();
-      
     } catch (error) {
       // console.error('Login failed:', error);
       loginError.value = "Incorrect email or password. Please try again.";
@@ -311,8 +416,31 @@ export function useRegisterModal() {
   };
 
   const submitRegister = async () => {
-    if (!isRegisterFormValid.value) return;
-    nextStep(); // Go to income step
+    if (!isEmailFormatValid.value) return;
+
+    // Email not yet verified — run the check first
+    if (
+      emailCheckState.value === "idle" ||
+      emailCheckState.value === "invalid"
+    ) {
+      await checkEmail();
+      return;
+    }
+
+    if (emailCheckState.value === "loading") return;
+
+    // Email is valid — now validate password before advancing
+    if (emailCheckState.value === "valid") {
+      if (!passwordValidation.value.isValid) {
+        // Shake the password hint button to hint at requirements
+        shakePasswordHint.value = true;
+        setTimeout(() => {
+          shakePasswordHint.value = false;
+        }, 700);
+        return;
+      }
+      nextStep(); // Go to income step
+    }
   };
 
   const submitIncome = async () => {
@@ -332,6 +460,7 @@ export function useRegisterModal() {
 
   const registerUser = async () => {
     isLoading.value = true;
+    registrationError.value = null;
 
     const registerUserPayload = {
       first_name: "John",
@@ -339,38 +468,55 @@ export function useRegisterModal() {
       password: password.value,
       email: email.value,
       income: yearlyIncome.value,
-      budget_types: selectedBudgetTypes.value.map(bt => ({
+      budget_types: selectedBudgetTypes.value.map((bt) => ({
         id: parseInt(bt.id, 10), // Convert string ID to integer
-        total_amount: bt.total_amount
+        total_amount: bt.total_amount,
       })),
     };
 
     try {
       await UserServices().registerUser(registerUserPayload);
-      
-      // Update auth context after successful registration
-      const { refreshAuth } = await import('@/composables/useAuth').then(m => m.useAuth());
-      await refreshAuth();
-      
-      isLoading.value = false;
-      nextStep(); // Go to success step
-    } catch (error) {
-      // console.error("Error registering user:", error);
-    } finally {
-      isLoading.value = false;
 
-      finalFields.value.email = email.value;
-      finalFields.value.yearlyIncome = yearlyIncome.value;
-      finalFields.value.budgets = selectedBudgetTypes.value;
+      // Update auth context after successful registration
+      const { refreshAuth } = await import("@/composables/useAuth").then((m) =>
+        m.useAuth(),
+      );
+      await refreshAuth();
+
+      // Capture summary fields before reset
+      finalEmail.value = email.value;
+      finalYearlyIncome.value = yearlyIncome.value;
+      finalBudgets.value = [...selectedBudgetTypes.value];
 
       resetFields();
+      nextStep(); // Go to success step
+    } catch (error) {
+      registrationError.value =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred. Please try again.";
+      currentStep.value = "register-error";
+    } finally {
+      isLoading.value = false;
     }
+  };
+
+  // Retry registration — go back to confirmation step from error state
+  const retryRegistration = () => {
+    registrationError.value = null;
+    currentStep.value = "confirmation";
+  };
+
+  // Start over from the register step
+  const startOver = () => {
+    registrationError.value = null;
+    resetForm();
   };
 
   // Budget management methods
   const toggleBudgetType = (budgetTypeId: string) => {
     const index = selectedBudgetTypes.value.findIndex(
-      (b) => b.id === budgetTypeId
+      (b) => b.id === budgetTypeId,
     );
     if (index > -1) {
       selectedBudgetTypes.value.splice(index, 1);
@@ -381,7 +527,7 @@ export function useRegisterModal() {
 
   const updateBudgetAmount = (budgetTypeId: string, amount: number) => {
     const budgetIndex = selectedBudgetTypes.value.findIndex(
-      (b) => b.id === budgetTypeId
+      (b) => b.id === budgetTypeId,
     );
     if (budgetIndex > -1 && selectedBudgetTypes.value[budgetIndex]) {
       selectedBudgetTypes.value[budgetIndex].total_amount = amount;
@@ -404,6 +550,12 @@ export function useRegisterModal() {
     password.value = "";
     yearlyIncome.value = null;
     selectedBudgetTypes.value = [];
+    emailCheckState.value = "idle";
+    emailCheckError.value = null;
+    loginEmailCheckState.value = "idle";
+    loginEmailCheckError.value = null;
+    registrationError.value = null;
+    shakePasswordHint.value = false;
     currentStep.value = "register";
   };
 
@@ -423,9 +575,20 @@ export function useRegisterModal() {
     currentMode,
     currentStep,
     loginError,
+    registrationError,
+
+    // Email check state
+    emailCheckState,
+    emailCheckError,
+    shakePasswordHint,
+
+    // Login email check state
+    loginEmailCheckState,
+    loginEmailCheckError,
 
     // Computed
     passwordValidation,
+    isEmailFormatValid,
     isRegisterFormValid,
     isLoginFormValid,
     isIncomeFormValid,
@@ -449,13 +612,17 @@ export function useRegisterModal() {
     submitBudgetTypes,
     submitBudgetAmounts,
     registerUser,
+    retryRegistration,
+    startOver,
     toggleBudgetType,
     updateBudgetAmount,
     getBudgetAmount,
     getTotalBudgetAmount,
     resetForm,
     fetchBudgetTypes,
-    
+    checkEmail,
+    checkUserExists,
+
     // Budget types API state
     budgetTypesLoading,
     budgetTypesError,
