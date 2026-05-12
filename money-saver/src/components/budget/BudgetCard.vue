@@ -5,7 +5,7 @@ interface Props {
     userBudget: UserBudgetTypeLabel;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 </script>
 
 <template>

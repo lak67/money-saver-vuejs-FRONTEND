@@ -23,7 +23,6 @@ const {
     amount,
     isFormValid,
     selectedBudget,
-    budgetTypes,
     availableBudgetTypeLabels,
     handleSubmit,
 } = useAddTransactionForm(props.budgets);
