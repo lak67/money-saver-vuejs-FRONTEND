@@ -1,5 +1,32 @@
-# Vue 3 + TypeScript + Vite
+# money-saver (Vue 3 + TypeScript + Vite)
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Running locally
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+**Docker (recommended):**
+```bash
+docker compose up -d    # start Vite dev server at http://localhost:5173
+docker compose down     # stop
+```
+
+The dev server proxies `/api/*` requests to `http://host.docker.internal:8080` (your local backend). Override with `BACKEND_URL=http://... docker compose up -d`.
+
+**Without Docker:**
+```bash
+npm install
+npm run dev     # http://localhost:5173
+```
+
+## Other commands
+
+```bash
+npm run build   # type-check + production bundle
+npm run preview # preview the production build
+```
+
+## Production (nginx)
+
+```bash
+docker compose --profile prod up --build
+```
+
+Serves the built bundle via nginx on port 80 and proxies `/api` to `http://backend:8080`.

@@ -49,6 +49,14 @@ Navigate to the `money-saver` directory before running these commands:
 - Prefer `apiClient.get<T>()`, `apiClient.post<T>()`, etc., for automatic parsing and error handling.
 - Business logic should be abstracted into feature-specific services (e.g., `BudgetServices.ts`).
 
+### UX & Interaction
+- **Auto-Focus:** Key input fields in multi-step flows should be automatically focused using `onMounted` or `watch` with `nextTick` to improve keyboard efficiency.
+- **Keyboard Navigation:** Support the "Enter" key for advancing through forms and modals by using native `<form>` elements and `@submit.prevent`.
+
+### Form Handling
+- **Custom Inputs:** Always use `:model-value` and `@update:model-value` when binding to custom UI components (like `Input.vue`) to ensure correct state synchronization.
+- **Form Submission:** Wrap multi-step modals or views in a single `<form>` to centralize submission logic and enable native browser features like submission on Enter.
+
 ### Theme System
 - The app supports Light, Dark, and System themes.
 - Use `useTheme()` composable for theme management.
