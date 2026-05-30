@@ -46,9 +46,8 @@
 
 <script setup lang="ts">
 import { ProfileDropdown } from '@/components/ui/profile-dropdown'
-import RegisterModal from '@/components/ui/register-modal/RegisterModal.vue'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { useAuth } from '@/composables/useAuth'
+import { RegisterModal, useAuth } from '@/features/auth'
 import { useRoute } from 'vue-router'
 
 // Composables

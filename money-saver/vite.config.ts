@@ -10,4 +10,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: process.env.BACKEND_URL || 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
 })

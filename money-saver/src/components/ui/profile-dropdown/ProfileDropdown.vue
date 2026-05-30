@@ -73,7 +73,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth, type User } from '@/composables/useAuth';
+import { useAuth } from '@/features/auth';
+import type { User } from '@/types';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 

@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import BudgetCard from '@/components/budget/BudgetCard.vue';
-import AddTransactionForm from '@/components/transactions/AddTransactionForm.vue';
-import TransactionList from '@/components/transactions/TransactionList.vue';
-import { useAuth } from '@/composables/useAuth';
-import { BudgetServices, type UserBudget } from '@/services/budget/BudgetServices';
-import { TransactionServices, type CreateTransactionPayload, type Transaction } from '@/services/transactions/TransactionServices';
+import { useAuth } from '@/features/auth';
+import { BudgetCard, BudgetServices } from '@/features/budget';
+import { AddTransactionForm, TransactionList, TransactionServices } from '@/features/transactions';
+import type { CreateTransactionPayload, Transaction, UserBudget } from '@/types';
 import { onMounted, ref, watch } from 'vue';
 
 const { isAuthenticated } = useAuth();
@@ -17,8 +15,8 @@ const isLoadingTransactions = ref(false);
 const isSubmittingTransaction = ref(false);
 
 // Services
-const budgetService = BudgetServices();
-const transactionService = TransactionServices();
+const budgetService = BudgetServices;
+const transactionService = TransactionServices;
 
 // Fetch data
 const fetchBudgets = async () => {
@@ -41,12 +39,16 @@ const fetchTransactions = async () => {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - 90);
 
-        transactions.value = await transactionService.fetchTransactions({
+        const data = await transactionService.fetchTransactions({
             start_date: startDate.toISOString(),
             end_date: endDate.toISOString(),
         });
+        
+        // Ensure data is an array
+        transactions.value = Array.isArray(data) ? data : [];
     } catch (error) {
         console.error('Failed to fetch transactions:', error);
+        transactions.value = []; // Reset to empty array on error
     } finally {
         isLoadingTransactions.value = false;
     }
@@ -95,9 +97,12 @@ const handleDeleteTransaction = async (transactionId: string) => {
 };
 
 // Initialize data when user is authenticated
-const initDashboard = () => {
-    fetchBudgets();
-    fetchTransactions();
+const initDashboard = async () => {
+    await Promise.all([
+        fetchBudgets(),
+        fetchTransactions()
+    ]);
+    console.log("Dashboard initialized with budgets:", budgets.value);
 };
 
 // Run immediately if already authenticated on mount,

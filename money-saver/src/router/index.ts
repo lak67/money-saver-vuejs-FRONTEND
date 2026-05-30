@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuth } from '../composables/useAuth'
+import { useAuth } from '../features/auth'
 import BudgetView from '../views/BudgetView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import ExpensesView from '../views/ExpensesView.vue'

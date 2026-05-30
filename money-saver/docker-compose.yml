@@ -1,20 +1,7 @@
 services:
+  # Dev server with hot module replacement — the default for local development.
+  # Usage: docker compose up -d
   frontend:
-    build:
-      context: .
-      args:
-        # Override with: VITE_API_BASE_URL=https://... docker compose up --build
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
-    ports:
-      - "80:80"
-    restart: unless-stopped
-    # If your backend runs in a separate compose project, attach it to a shared network:
-    # networks:
-    #   - app-network
-
-  # Dev server with hot module replacement — runs Vite directly, no build step.
-  # Usage: docker compose run --rm --service-ports frontend-dev
-  frontend-dev:
     image: node:22-alpine
     working_dir: /app
     volumes:
@@ -23,7 +10,23 @@ services:
     ports:
       - "5173:5173"
     environment:
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080/api}
+      # Points Vite's server-side proxy at your host machine's backend.
+      # host.docker.internal resolves to the host on Docker Desktop (Mac/Windows)
+      # and via extra_hosts below on Linux.
+      BACKEND_URL: ${BACKEND_URL:-http://host.docker.internal:8080}
     command: sh -c "npm install && npm run dev -- --host"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # Linux compatibility
+
+  # Production build served by nginx — only started with: docker compose --profile prod up
+  frontend-prod:
+    build:
+      context: .
+      args:
+        # Override with: VITE_API_BASE_URL=https://... docker compose --profile prod up --build
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+    ports:
+      - "80:80"
+    restart: unless-stopped
     profiles:
-      - dev
+      - prod

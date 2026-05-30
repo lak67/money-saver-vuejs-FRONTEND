@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import { useAuth } from './composables/useAuth'
+import { useAuth } from './features/auth'
 import router from './router'
 import './style.css'
 

@@ -5,7 +5,7 @@
 
 // Environment variables with fallbacks
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1",
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || "/api/v1",
   TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || "5000"),
   DEV_MODE: import.meta.env.VITE_DEV_MODE === "true",
   ENABLE_LOGGING: import.meta.env.VITE_ENABLE_LOGGING === "true",
@@ -65,4 +65,99 @@ export const apiRequest = async (
   }
 
   return response;
+};
+
+/**
+ * Custom error class for API-related errors
+ */
+export class ApiError extends Error {
+  constructor(
+    public message: string,
+    public status?: number,
+    public data?: any,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
+/**
+ * Robust API client wrapper
+ */
+export const apiClient = {
+  async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const response = await apiRequest(endpoint, options);
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { message: response.statusText };
+      }
+      throw new ApiError(
+        errorData.message || `API request failed: ${response.statusText}`,
+        response.status,
+        errorData,
+      );
+    }
+
+    if (response.status === 204) {
+      return {} as T;
+    }
+
+    try {
+      return await response.json();
+    } catch (e) {
+      if (response.status === 200 || response.status === 201) {
+        // Some APIs might return empty body on 200/201 which fetch.json() fails on
+        return {} as T;
+      }
+      throw new ApiError("Failed to parse API response");
+    }
+  },
+
+  get<T>(endpoint: string, options?: Omit<RequestInit, "method">) {
+    return this.request<T>(endpoint, { ...options, method: "GET" });
+  },
+
+  post<T>(
+    endpoint: string,
+    body?: any,
+    options?: Omit<RequestInit, "method" | "body">,
+  ) {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  },
+
+  put<T>(
+    endpoint: string,
+    body?: any,
+    options?: Omit<RequestInit, "method" | "body">,
+  ) {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  },
+
+  patch<T>(
+    endpoint: string,
+    body?: any,
+    options?: Omit<RequestInit, "method" | "body">,
+  ) {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: "PATCH",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  },
+
+  delete<T>(endpoint: string, options?: Omit<RequestInit, "method">) {
+    return this.request<T>(endpoint, { ...options, method: "DELETE" });
+  },
 };

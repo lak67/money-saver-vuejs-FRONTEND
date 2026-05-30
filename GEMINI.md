@@ -16,16 +16,15 @@
 The project follows a standard Vue.js directory structure within the `money-saver/` directory:
 
 - `src/assets/`: Static assets like images and global styles.
-- `src/components/`: Reusable UI components.
-    - `ui/`: Base components (buttons, inputs, dialogs, etc.).
-    - `layout/`: Layout components like Navigation.
-    - `budget/`, `transactions/`: Feature-specific components.
-    - `register-modal/`: Multi-step registration flow components.
-- `src/composables/`: Shared reactive logic (e.g., `useAuth.ts`, `useTheme.ts`).
-- `src/lib/`: Core utilities, including `api.ts` for centralized API configuration.
-- `src/router/`: Vue Router configuration and route definitions.
-- `src/services/`: Service layer for API interactions (budget, transactions, users).
-- `src/views/`: Page-level components (Home, Dashboard, Expenses, Budget, Settings).
+- `src/components/ui/`: Shared base UI components (buttons, inputs, dialogs, etc.).
+- `src/features/`: Domain-specific modules encapsulating logic, components, and services.
+    - `auth/`: Authentication logic and registration flow.
+    - `budget/`: Budget management and visualization.
+    - `transactions/`: Expense tracking and transaction history.
+- `src/types/`: Centralized TypeScript interfaces and types.
+- `src/lib/`: Core utilities, including `api.ts` for the `apiClient`.
+- `src/router/`: Vue Router configuration.
+- `src/views/`: Page-level components.
 
 ## Building and Running
 Navigate to the `money-saver` directory before running these commands:
@@ -41,14 +40,14 @@ Navigate to the `money-saver` directory before running these commands:
 
 ### Coding Standards
 - **SFC Style:** Always use `<script setup lang="ts">` for Single File Components.
-- **Styling:** Use Tailwind CSS utility classes for styling. Follow the established color tokens for theme consistency.
-- **TypeScript:** Maintain strict typing. Avoid `any` where possible.
-- **Components:** Favor composition and small, focused components. Base UI components should reside in `src/components/ui`.
+- **Styling:** Use Tailwind CSS utility classes.
+- **Modularity:** Follow the **Feature-Based Architecture**. New domain logic should be placed in `src/features/`.
+- **TypeScript:** Maintain strict typing. All shared data models should live in `src/types/`.
 
 ### API Interactions
-- All API requests should go through the `apiRequest` utility in `src/lib/api.ts`.
-- Business logic and data fetching should be abstracted into services within `src/services/`.
-- Default API Base URL: `http://localhost:8080/api/v1` (configurable via environment variables).
+- All API requests should use the `apiClient` in `src/lib/api.ts`.
+- Prefer `apiClient.get<T>()`, `apiClient.post<T>()`, etc., for automatic parsing and error handling.
+- Business logic should be abstracted into feature-specific services (e.g., `BudgetServices.ts`).
 
 ### Theme System
 - The app supports Light, Dark, and System themes.
