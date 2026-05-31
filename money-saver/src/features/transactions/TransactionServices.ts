@@ -37,7 +37,7 @@ export const TransactionServices = {
    * Create a new transaction
    */
   async createTransaction(payload: CreateTransactionPayload): Promise<Transaction> {
-    return apiClient.post<Transaction>(API_ENDPOINTS.TRANSACTIONS, payload);
+    return apiClient.post<Transaction>(API_ENDPOINTS.CREATE_TRANSACTION, payload);
   },
 
   /**

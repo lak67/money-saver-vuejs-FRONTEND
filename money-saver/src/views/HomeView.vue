@@ -12,7 +12,6 @@ const budgets = ref<UserBudget | null>(null);
 const transactions = ref<Transaction[]>([]);
 const isLoadingBudgets = ref(false);
 const isLoadingTransactions = ref(false);
-const isSubmittingTransaction = ref(false);
 
 // Services
 const budgetService = BudgetServices;
@@ -54,25 +53,10 @@ const fetchTransactions = async () => {
     }
 };
 
-// Handle transaction submission
-const handleAddTransaction = async (payload: { budgetTypeId: number; budgetTypeLabelId: number; amount: number }) => {
-    isSubmittingTransaction.value = true;
-    try {
-        const transactionPayload: CreateTransactionPayload = {
-            budget_type_id: payload.budgetTypeId.toString(),
-            amount: payload.amount,
-        };
-
-        await transactionService.createTransaction(transactionPayload);
-
-        // Refresh both budgets and transactions
-        await Promise.all([fetchBudgets(), fetchTransactions()]);
-    } catch (error) {
-        console.error('Failed to create transaction:', error);
-        // TODO: Show error message to user
-    } finally {
-        isSubmittingTransaction.value = false;
-    }
+// Handle transaction success (after submission)
+const onTransactionSuccess = async () => {
+    // Refresh both budgets and transactions
+    await Promise.all([fetchBudgets(), fetchTransactions()]);
 };
 
 // Handle transaction edit
@@ -145,8 +129,7 @@ watch(isAuthenticated, (authenticated) => {
 
             <!-- Add Transaction Form -->
             <section class="mb-8">
-                <AddTransactionForm :budgets="budgets" :is-loading="isSubmittingTransaction"
-                    @submit="handleAddTransaction" />
+                <AddTransactionForm :budgets="budgets" @success="onTransactionSuccess" />
             </section>
 
             <!-- Transactions List -->
