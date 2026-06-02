@@ -1,14 +1,9 @@
 export interface Transaction {
-  id: string;
-  user_id: string;
-  budget_type_id: number;
-  budget_type_label_id?: number;
-  budget_type_name: string;
-  budget_type_icon: string;
+  id: number;
   amount: number;
-  description?: string;
+  type_name: string;
+  label_name?: string;
   created_at: string;
-  updated_at: string;
 }
 
 export interface CreateTransactionPayload {
@@ -21,11 +16,4 @@ export interface CreateTransactionPayload {
 export interface UpdateTransactionPayload {
   amount?: number;
   description?: string;
-}
-
-export interface FetchTransactionsParams {
-  budget_type_id?: string;
-  start_date?: string;
-  end_date?: string;
-  limit?: number;
 }

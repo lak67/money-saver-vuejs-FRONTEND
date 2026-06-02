@@ -2,7 +2,7 @@
 import { useAuth } from '@/features/auth';
 import { BudgetCard, BudgetServices } from '@/features/budget';
 import { AddTransactionForm, TransactionList, TransactionServices } from '@/features/transactions';
-import type { CreateTransactionPayload, Transaction, UserBudget } from '@/types';
+import type { Transaction, UserBudget } from '@/types';
 import { onMounted, ref, watch } from 'vue';
 
 const { isAuthenticated } = useAuth();
@@ -33,16 +33,8 @@ const fetchBudgets = async () => {
 const fetchTransactions = async () => {
     isLoadingTransactions.value = true;
     try {
-        // Fetch last 90 days of transactions
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 90);
+        const data = await transactionService.fetchTransactions();
 
-        const data = await transactionService.fetchTransactions({
-            start_date: startDate.toISOString(),
-            end_date: endDate.toISOString(),
-        });
-        
         // Ensure data is an array
         transactions.value = Array.isArray(data) ? data : [];
     } catch (error) {

@@ -19,7 +19,7 @@ export const API_ENDPOINTS = {
   EXPENSES: "/expenses",
   BUDGETS: "/budgets",
   USER_BUDGETS: "/user/budgets",
-  TRANSACTIONS: "/transactions",
+  TRANSACTIONS: "/get/budget-entries",
   CREATE_TRANSACTION: "/create-budget-entry",
   REGISTER_USER: "/register",
   LOGIN_USER: "/login",

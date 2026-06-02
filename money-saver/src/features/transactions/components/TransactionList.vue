@@ -22,13 +22,13 @@ const searchQuery = ref<string>('');
 const uniqueBudgetTypes = computed(() => {
     const types = new Map<string, { id: string; name: string; icon: string }>();
     if (!Array.isArray(props.transactions)) return [];
-    
+
     props.transactions.forEach(t => {
-        if (!types.has(t.budget_type_id)) {
-            types.set(t.budget_type_id, {
-                id: t.budget_type_id,
-                name: t.budget_type_name,
-                icon: t.budget_type_icon,
+        if (!types.has(t.type_name)) {
+            types.set(t.type_name, {
+                id: t.type_name,
+                name: t.type_name,
+                icon: t.budget_type_icon || '💰',
             });
         }
     });
@@ -37,20 +37,20 @@ const uniqueBudgetTypes = computed(() => {
 
 const filteredTransactions = computed(() => {
     if (!Array.isArray(props.transactions)) return [];
-    
+
     let filtered = [...props.transactions];
 
     // Filter by budget type
     if (filterBudgetTypeId.value) {
-        filtered = filtered.filter(t => t.budget_type_id === filterBudgetTypeId.value);
+        filtered = filtered.filter(t => t.type_name === filterBudgetTypeId.value);
     }
 
     // Filter by search query
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase();
         filtered = filtered.filter(t =>
-            t.budget_type_name.toLowerCase().includes(query) ||
-            t.description?.toLowerCase().includes(query) ||
+            t.type_name.toLowerCase().includes(query) ||
+            (t.label_name && t.label_name.toLowerCase().includes(query)) ||
             t.amount.toString().includes(query)
         );
     }
@@ -127,11 +127,19 @@ const clearFilters = () => {
                     <span class="text-2xl">{{ transaction.budget_type_icon }}</span>
                     <div class="flex-1 min-w-0">
                         <p class="font-medium text-foreground truncate">
-                            {{ transaction.budget_type_name }}
+                            <template v-if="transaction.label_name">
+                                {{ transaction.label_name }}
+                                <span class="text-xs font-normal text-muted-foreground ml-1">
+                                    {{ transaction.type_name }}
+                                </span>
+                            </template>
+                            <template v-else>
+                                {{ transaction.type_name }}
+                            </template>
                         </p>
                         <div class="flex items-center gap-2 text-xs text-muted-foreground">
                             <span>{{ formatDate(transaction.created_at) }}</span>
-                            <span v-if="transaction.description" class="truncate">• {{ transaction.description }}</span>
+                            <!-- <span v-if="transaction.description" class="truncate">• {{ transaction.description }}</span> -->
                         </div>
                     </div>
                 </div>
