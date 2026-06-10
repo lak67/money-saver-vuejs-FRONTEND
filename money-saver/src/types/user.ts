@@ -4,6 +4,13 @@ export interface User {
   first_name?: string;
   last_name?: string;
   name?: string;
+  income?: number;
+}
+
+export interface UpdateUserPayload {
+  first_name: string | null;
+  last_name: string | null;
+  income: number | null;
 }
 
 export interface RegisterUserPayload {

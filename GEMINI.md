@@ -18,7 +18,7 @@ The project follows a standard Vue.js directory structure within the `money-save
 - `src/assets/`: Static assets like images and global styles.
 - `src/components/ui/`: Shared base UI components (buttons, inputs, dialogs, etc.).
 - `src/features/`: Domain-specific modules encapsulating logic, components, and services.
-    - `auth/`: Authentication logic and registration flow.
+    - `auth/`: Authentication logic, registration flow, and secure account updates (email/password).
     - `budget/`: Budget management and visualization.
     - `transactions/`: Expense tracking and transaction history.
 - `src/types/`: Centralized TypeScript interfaces and types.

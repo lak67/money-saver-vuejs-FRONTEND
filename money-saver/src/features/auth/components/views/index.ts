@@ -6,3 +6,4 @@ export { LoginView } from "./login-view";
 export { RegisterErrorView } from "./register-error-view";
 export { RegisterView } from "./register-view";
 export { SuccessView } from "./success-view";
+export * from "./security-action-views";

@@ -94,6 +94,18 @@ export const useAuth = () => {
   };
 
   /**
+   * Update user state with partial data (merging)
+   */
+  const patchUser = (partialData: Partial<User>) => {
+    if (authState.value.user) {
+      authState.value.user = {
+        ...authState.value.user,
+        ...partialData
+      };
+    }
+  };
+
+  /**
    * Login user (to be called after successful login)
    */
   const loginSuccess = (userData: User) => {
@@ -142,6 +154,7 @@ export const useAuth = () => {
     loginSuccess,
     logout,
     refreshAuth,
+    patchUser,
     clearError,
     setError
   };

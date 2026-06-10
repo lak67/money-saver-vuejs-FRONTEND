@@ -25,34 +25,44 @@
                 <div class="bg-card border border-border rounded-lg shadow-sm">
                     <div class="p-6 border-b border-border">
                         <h2 class="text-lg font-semibold text-card-foreground">Profile Information</h2>
+                        <p class="text-sm text-muted-foreground mt-1">Update your personal information and income details</p>
                     </div>
                     <div class="p-6 space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-foreground mb-2">Email Address</label>
-                                <input type="email" value="user@example.com"
-                                    class="w-full border border-input bg-background rounded-md px-3 py-2 text-foreground">
+                            <div class="md:col-span-2">
+                                <Label for="email" class="mb-2">Email Address</Label>
+                                <div class="flex gap-2">
+                                    <Input id="email" type="email" :model-value="user?.email" disabled class="bg-muted/50 cursor-not-allowed flex-1" />
+                                    <SecurityActionModal type="email">
+                                        <Button variant="outline">Change</Button>
+                                    </SecurityActionModal>
+                                </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-foreground mb-2">Yearly Income</label>
-                                <input type="number" value="75000"
-                                    class="w-full border border-input bg-background rounded-md px-3 py-2 text-foreground">
+                                <Label for="firstName" class="mb-2">First Name</Label>
+                                <Input id="firstName" v-model="formData.first_name" placeholder="Enter first name" />
+                            </div>
+                            <div>
+                                <Label for="lastName" class="mb-2">Last Name</Label>
+                                <Input id="lastName" v-model="formData.last_name" placeholder="Enter last name" />
+                            </div>
+                            <div>
+                                <Label for="income" class="mb-2">Yearly Income</Label>
+                                <Input id="income" type="number" 
+                                    :model-value="formData.income ?? ''" 
+                                    @update:model-value="val => formData.income = val === '' ? null : Number(val)"
+                                    placeholder="e.g. 75000" />
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-foreground mb-2">Currency</label>
-                            <select class="w-full md:w-auto border border-input bg-background text-foreground rounded-md px-3 py-2">
-                                <option>USD ($)</option>
-                                <option>EUR (€)</option>
-                                <option>GBP (£)</option>
-                                <option>CAD (C$)</option>
-                            </select>
-                        </div>
-                        <div class="pt-4">
-                            <button
-                                class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">
-                                Save Profile
-                            </button>
+                        
+                        <div class="pt-4 flex items-center gap-3">
+                            <Button @click="handleSave" :disabled="!hasChanges || isSaving">
+                                <Loader2 v-if="isSaving" class="mr-2 h-4 w-4 animate-spin" />
+                                {{ isSaving ? 'Saving...' : 'Save Profile' }}
+                            </Button>
+                            <Button v-if="hasChanges" variant="outline" @click="handleReset" :disabled="isSaving">
+                                Cancel
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -149,10 +159,12 @@
                     </div>
                     <div class="p-6 space-y-4">
                         <div>
-                            <button
-                                class="bg-yellow-600 dark:bg-yellow-700 text-white px-4 py-2 rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-800 transition-colors">
-                                Change Password
-                            </button>
+                            <SecurityActionModal type="password">
+                                <Button
+                                    class="bg-yellow-600 dark:bg-yellow-700 text-white hover:bg-yellow-700 dark:hover:bg-yellow-800 transition-colors">
+                                    Change Password
+                                </Button>
+                            </SecurityActionModal>
                         </div>
                         <div>
                             <button
@@ -194,7 +206,99 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
 import { ThemeSelector } from '@/components/ui/theme-toggle';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-vue-next';
+import { useAuth } from '@/features/auth/useAuth';
+import { AuthServices } from '@/features/auth/AuthServices';
+import { SecurityActionModal } from '@/features/auth/components';
+import type { UpdateUserPayload, User } from '@/types';
 
-// Future: Settings logic will go here
+const { user, patchUser } = useAuth();
+const isSaving = ref(false);
+
+const formData = ref({
+    first_name: '',
+    last_name: '',
+    income: null as number | null
+});
+
+// Initial data for change detection
+const initialData = ref({
+    first_name: '',
+    last_name: '',
+    income: null as number | null
+});
+
+const syncFormData = () => {
+    if (user.value) {
+        const userFirstName = user.value.first_name || '';
+        const userLastName = user.value.last_name || '';
+        const userIncome = user.value.income ?? null;
+
+        formData.value.first_name = userFirstName;
+        formData.value.last_name = userLastName;
+        formData.value.income = userIncome;
+        
+        initialData.value.first_name = userFirstName;
+        initialData.value.last_name = userLastName;
+        initialData.value.income = userIncome;
+    }
+};
+
+onMounted(() => {
+    syncFormData();
+});
+
+watch(user, () => {
+    syncFormData();
+}, { immediate: true });
+
+const hasChanges = computed(() => {
+    return formData.value.first_name !== initialData.value.first_name ||
+           formData.value.last_name !== initialData.value.last_name ||
+           formData.value.income !== initialData.value.income;
+});
+
+const handleReset = () => {
+    formData.value.first_name = initialData.value.first_name;
+    formData.value.last_name = initialData.value.last_name;
+    formData.value.income = initialData.value.income;
+};
+
+const handleSave = async () => {
+    if (!hasChanges.value) return;
+    
+    isSaving.value = true;
+    try {
+        const payload: UpdateUserPayload = {
+            first_name: formData.value.first_name !== initialData.value.first_name ? formData.value.first_name : null,
+            last_name: formData.value.last_name !== initialData.value.last_name ? formData.value.last_name : null,
+            income: formData.value.income !== initialData.value.income ? formData.value.income : null,
+        };
+        
+        const updatedUser = await AuthServices.updateUser(payload);
+        
+        // Construct the patch data from what we actually sent
+        const patchData: any = {};
+        if (payload.first_name !== null) patchData.first_name = payload.first_name;
+        if (payload.last_name !== null) patchData.last_name = payload.last_name;
+        if (payload.income !== null) patchData.income = payload.income;
+
+        // If backend returned a valid user object with fields, merge that too (higher priority)
+        const mergedData = {
+            ...patchData,
+            ...(updatedUser && typeof updatedUser === 'object' ? updatedUser : {})
+        };
+
+        patchUser(mergedData);
+    } catch (error) {
+        console.error('Failed to update profile:', error);
+    } finally {
+        isSaving.value = false;
+    }
+};
 </script>

@@ -26,6 +26,10 @@ export const API_ENDPOINTS = {
   CHECK_EMAIL: "/email/exists",
   AUTH_STATUS: "/auth/status",
   LOGOUT: "/logout",
+  EDIT_USER: "/user/edit",
+  REQUEST_SECURITY_CODE: "/auth/request-code",
+  VERIFY_SECURITY_CODE: "/auth/verify-code",
+  UPDATE_SECURITY_FIELD: "/auth/update-field",
 } as const;
 
 // Helper function to build full URL
