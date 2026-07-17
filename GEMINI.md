@@ -13,7 +13,7 @@
 - **Icons:** [Lucide Vue Next](https://lucide.dev/)
 
 ## Project Structure
-The project follows a standard Vue.js directory structure within the `money-saver/` directory:
+The project follows a standard Vue.js directory structure in the root directory:
 
 - `src/assets/`: Static assets like images and global styles.
 - `src/components/ui/`: Shared base UI components (buttons, inputs, dialogs, etc.).
@@ -27,7 +27,7 @@ The project follows a standard Vue.js directory structure within the `money-save
 - `src/views/`: Page-level components.
 
 ## Building and Running
-Navigate to the `money-saver` directory before running these commands:
+Run these commands from the root directory:
 
 | Command | Action |
 | :--- | :--- |
@@ -71,6 +71,6 @@ The following variables can be configured in `.env` files:
 - `VITE_ENABLE_LOGGING`: Toggle API request/response logging.
 
 ## Key Documentation Files
-- `money-saver/README.md`: Basic project setup instructions.
-- `money-saver/ROUTER_SETUP.md`: Detailed information on the routing implementation.
-- `money-saver/THEME_IMPLEMENTATION.md`: Details on the dark/light mode system.
+- `README.md`: Basic project setup instructions.
+- `ROUTER_SETUP.md`: Detailed information on the routing implementation.
+- `THEME_IMPLEMENTATION.md`: Details on the dark/light mode system.

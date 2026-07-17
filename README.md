@@ -1,24 +1,32 @@
-# money-saver-vuejs-frontend
+# money-saver (Vue 3 + TypeScript + Vite)
 
-## Project setup
+## Running locally
+
+**Docker (recommended):**
+```bash
+docker compose up -d    # start Vite dev server at http://localhost:5173
+docker compose down     # stop
 ```
+
+The dev server proxies `/api/*` requests to `http://host.docker.internal:8080` (your local backend). Override with `BACKEND_URL=http://... docker compose up -d`.
+
+**Without Docker:**
+```bash
 npm install
+npm run dev     # http://localhost:5173
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+## Other commands
+
+```bash
+npm run build   # type-check + production bundle
+npm run preview # preview the production build
 ```
 
-### Compiles and minifies for production
-```
-npm run build
+## Production (nginx)
+
+```bash
+docker compose --profile prod up --build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Serves the built bundle via nginx on port 80 and proxies `/api` to `http://backend:8080`.
