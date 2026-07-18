@@ -504,7 +504,7 @@
                   </div>
                 </div>
                 <div class="text-right flex flex-col items-end gap-2">
-                  <p class="font-semibold text-lg text-foreground">-${{ item.amount.toFixed(2) }}</p>
+                  <p class="font-semibold text-lg text-foreground">${{ item.amount.toFixed(2) }}</p>
                   <div class="flex gap-2">
                     <button @click="startEditingRecurring(item)"
                       class="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-0.5 cursor-pointer">
