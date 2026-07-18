@@ -215,7 +215,7 @@ import { Loader2 } from 'lucide-vue-next';
 import { useAuth } from '@/features/auth/useAuth';
 import { AuthServices } from '@/features/auth/AuthServices';
 import { SecurityActionModal } from '@/features/auth/components';
-import type { UpdateUserPayload, User } from '@/types';
+import type { UpdateUserPayload } from '@/types';
 
 const { user, patchUser } = useAuth();
 const isSaving = ref(false);

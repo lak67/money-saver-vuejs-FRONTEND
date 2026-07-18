@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { AuthServices } from '../AuthServices';
 import { useAuth } from '../useAuth';
 import type { SecurityActionType } from '@/types';

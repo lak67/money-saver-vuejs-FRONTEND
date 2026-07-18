@@ -3,6 +3,7 @@ export interface Transaction {
   amount: number;
   type_name: string;
   label_name?: string;
+  budget_type_icon?: string;
   created_at: string;
 }
 

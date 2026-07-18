@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
-import type { BudgetAmount, BudgetType } from '../../useRegisterModal'
+import type { BudgetAmount } from '../../useRegisterModal'
+import type { BudgetType } from '@/types'
 
 export function useBudgetConfirmationView() {
   // Local state

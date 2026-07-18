@@ -5,7 +5,7 @@
 
 // Environment variables with fallbacks
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || "/api/v1",
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || "/api/vi",
   TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || "5000"),
   DEV_MODE: import.meta.env.VITE_DEV_MODE === "true",
   ENABLE_LOGGING: import.meta.env.VITE_ENABLE_LOGGING === "true",
@@ -30,6 +30,10 @@ export const API_ENDPOINTS = {
   REQUEST_SECURITY_CODE: "/auth/request-code",
   VERIFY_SECURITY_CODE: "/auth/verify-code",
   UPDATE_SECURITY_FIELD: "/auth/update-field",
+  RECURRING_CREATE: "/user/recurring/create",
+  RECURRING_UPDATE: "/user/recurring/update",
+  RECURRING_ALL: "/user/recurring/all",
+  RECURRING_DELETE: "/user/recurring/delete",
 } as const;
 
 // Helper function to build full URL
@@ -75,12 +79,17 @@ export const apiRequest = async (
  * Custom error class for API-related errors
  */
 export class ApiError extends Error {
+  status?: number;
+  data?: any;
+
   constructor(
-    public message: string,
-    public status?: number,
-    public data?: any,
+    message: string,
+    status?: number,
+    data?: any,
   ) {
     super(message);
+    this.status = status;
+    this.data = data;
     this.name = "ApiError";
   }
 }
